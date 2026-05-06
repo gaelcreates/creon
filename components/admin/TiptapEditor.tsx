@@ -8,6 +8,7 @@ import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Youtube from "@tiptap/extension-youtube";
+import { Vimeo } from "@/lib/tiptap/vimeo-extension";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -48,6 +49,7 @@ export function TiptapEditor({
         controls: true,
         modestBranding: true,
       }),
+      Vimeo,
       Placeholder.configure({ placeholder }),
     ],
     content: initialJSON ?? initialHTML ?? "",
@@ -111,6 +113,24 @@ function Toolbar({ editor }: { editor: Editor }) {
     );
     if (!url) return;
     editor.commands.setYoutubeVideo({ src: url, width: 640, height: 360 });
+  }, [editor]);
+
+  const promptVimeo = useCallback(() => {
+    const url = window.prompt(
+      "URL Vimeo (https://vimeo.com/123456789)",
+      "",
+    );
+    if (!url) return;
+    const ok = editor.commands.setVimeoVideo({
+      src: url,
+      width: 640,
+      height: 360,
+    });
+    if (!ok) {
+      window.alert(
+        "URL Vimeo non reconnue. Format attendu : https://vimeo.com/123456789",
+      );
+    }
   }, [editor]);
 
   return (
@@ -187,8 +207,11 @@ function Toolbar({ editor }: { editor: Editor }) {
         <ToolBtn onClick={promptImage} label="Image">
           🖼
         </ToolBtn>
-        <ToolBtn onClick={promptYoutube} label="YouTube">
-          ▶
+        <ToolBtn onClick={promptYoutube} label="Embed YouTube">
+          <span className="text-[11px] font-display">YT</span>
+        </ToolBtn>
+        <ToolBtn onClick={promptVimeo} label="Embed Vimeo">
+          <span className="text-[11px] font-display">Vi</span>
         </ToolBtn>
         <ToolBtn
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
