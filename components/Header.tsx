@@ -10,6 +10,7 @@ import type { AuthCreator } from "@/lib/auth";
 type HeaderProps = {
   creator?: AuthCreator | null;
   isAdmin?: boolean;
+  bannerText?: string | null;
 };
 
 const navLinks = [
@@ -20,7 +21,11 @@ const navLinks = [
   { href: "/a-propos", label: "À propos" },
 ];
 
-export function Header({ creator = null, isAdmin = false }: HeaderProps) {
+export function Header({
+  creator = null,
+  isAdmin = false,
+  bannerText = null,
+}: HeaderProps) {
   const pathname = usePathname();
   const isAuthenticated = creator !== null || isAdmin;
 
@@ -32,12 +37,18 @@ export function Header({ creator = null, isAdmin = false }: HeaderProps) {
     <>
       {/* Editorial top bar */}
       <div className="bg-noir text-creme px-6 lg:px-14 py-2 flex justify-between items-center text-[11px] tracking-[0.16em] uppercase font-light">
-        <span>N° 1 · Édition de lancement</span>
-        <span className="hidden sm:flex gap-5">
-          <span>Lausanne 14°</span>
-          <span>Genève 16°</span>
-          <span className="text-accent">+ events ce week-end</span>
-        </span>
+        {bannerText ? (
+          <span className="truncate">{bannerText}</span>
+        ) : (
+          <>
+            <span>N° 1 · Édition de lancement</span>
+            <span className="hidden sm:flex gap-5">
+              <span>Lausanne 14°</span>
+              <span>Genève 16°</span>
+              <span className="text-accent">+ events ce week-end</span>
+            </span>
+          </>
+        )}
       </div>
 
       {/* Main header */}

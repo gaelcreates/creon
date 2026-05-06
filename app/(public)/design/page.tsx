@@ -5,6 +5,11 @@ import { Input } from "@/components/ui/Input";
 import { Tag } from "@/components/ui/Tag";
 import { Chip } from "@/components/ui/Chip";
 
+export const metadata = {
+  title: "Design system — CREON (interne)",
+  robots: { index: false, follow: false },
+};
+
 const sampleCreator = { handle: "gael", display_name: "Gaël" };
 
 function Section({
