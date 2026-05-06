@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="risoP">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="91"></feTurbulence>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"></feColorMatrix>
+      <feComposite in2="SourceGraphic" operator="in"></feComposite>
+    </filter>
+  </defs>
+  <rect width="600" height="700" fill="#ede0c4"></rect>
+  
+  <ellipse cx="300" cy="240" rx="140" ry="160" fill="#100609"></ellipse>
+  <rect x="180" y="380" width="240" height="320" fill="#ff7a00"></rect>
+  
+  <rect x="180" y="380" width="240" height="40" fill="#100609"></rect>
+  <rect width="600" height="700" filter="url(#risoP)" opacity="0.5"></rect>
+</svg>

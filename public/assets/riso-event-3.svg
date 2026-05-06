@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="risoEv3">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="41"></feTurbulence>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"></feColorMatrix>
+      <feComposite in2="SourceGraphic" operator="in"></feComposite>
+    </filter>
+  </defs>
+  <rect width="600" height="380" fill="#f5ead5"></rect>
+  
+  <path d="M 0 240 L 120 130 L 200 200 L 320 90 L 420 180 L 540 110 L 600 150 L 600 240 Z" fill="#100609"></path>
+  <path d="M 0 240 L 600 240 L 600 320 L 0 320 Z" fill="#ff7a00"></path>
+  <circle cx="500" cy="80" r="34" fill="#ff7a00"></circle>
+  <rect width="600" height="380" filter="url(#risoEv3)" opacity="0.5"></rect>
+</svg>

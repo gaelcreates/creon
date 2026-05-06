@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="risoArt2">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="63"></feTurbulence>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"></feColorMatrix>
+      <feComposite in2="SourceGraphic" operator="in"></feComposite>
+    </filter>
+  </defs>
+  <rect width="600" height="360" fill="#100609"></rect>
+  
+  <circle cx="180" cy="180" r="120" fill="#ff7a00"></circle>
+  <rect x="320" y="80" width="220" height="220" fill="#f5ead5"></rect>
+  <rect x="350" y="110" width="160" height="160" fill="#ff7a00"></rect>
+  <rect width="600" height="360" filter="url(#risoArt2)" opacity="0.5"></rect>
+</svg>

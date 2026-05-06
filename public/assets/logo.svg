@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" role="img" aria-label="CREON CREW">
+  <defs>
+    
+    <filter id="logoGrain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="9" result="noise"></feTurbulence>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.4 -0.55" result="bw"></feColorMatrix>
+      <feComposite in="bw" in2="SourceAlpha" operator="in" result="grainInShape"></feComposite>
+      <feComposite in="SourceGraphic" in2="grainInShape" operator="out"></feComposite>
+    </filter>
+  </defs>
+
+  
+  <ellipse cx="240" cy="100" rx="232" ry="78" fill="#ff7a00"></ellipse>
+
+  
+  <g filter="url(#logoGrain)">
+    <text x="240" y="138" text-anchor="middle" font-family="Affigere, &#39;Times New Roman&#39;, serif" font-size="148" font-weight="400" fill="#100609" textLength="380" lengthAdjust="spacingAndGlyphs">CREON</text>
+  </g>
+
+  
+  <text x="430" y="42" text-anchor="middle" font-family="Lineal, system-ui, sans-serif" font-size="16" font-weight="200" letter-spacing="3" fill="#100609">CREW</text>
+</svg>

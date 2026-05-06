@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="riso3">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="22"></feTurbulence>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"></feColorMatrix>
+      <feComposite in2="SourceGraphic" operator="in"></feComposite>
+    </filter>
+  </defs>
+  <rect width="400" height="500" fill="#ff7a00"></rect>
+  
+  <path d="M 100 230 Q 140 100 200 95 Q 270 95 295 220 L 320 230 L 320 250 L 80 250 L 80 230 Z" fill="#100609"></path>
+  <rect x="120" y="240" width="160" height="280" fill="#100609"></rect>
+  <rect width="400" height="500" filter="url(#riso3)" opacity="0.55"></rect>
+</svg>
