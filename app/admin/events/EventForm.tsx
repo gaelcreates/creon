@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CategoryPicker } from "@/components/CategoryPicker";
 import { DateTimePickerInput } from "@/components/admin/DateTimePickerInput";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 
 type Creator = { id: string; display_name: string };
 
@@ -226,14 +227,12 @@ export function EventForm({
         </Section>
 
         <Section number="04" title="Visuel">
-          <Field
-            label="URL image cover"
-            hint="Pour V1 : /assets/riso-event-1.svg | /assets/riso-event-2.svg | /assets/riso-event-3.svg ou URL externe. Upload réel en Sprint 4."
-          >
-            <Input
+          <Field label="Image cover" hint="JPG, PNG ou WebP. Ratio 4:3 idéal.">
+            <ImageUploader
               name="cover_image"
-              defaultValue={event.cover_image ?? ""}
-              placeholder="/assets/riso-event-1.svg"
+              defaultValue={event.cover_image}
+              folder="events"
+              aspect="4/3"
             />
           </Field>
         </Section>

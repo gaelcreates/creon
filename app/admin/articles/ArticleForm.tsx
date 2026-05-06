@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 
 type Creator = { id: string; display_name: string };
 type EventLite = { id: string; title: string };
@@ -200,14 +201,12 @@ export function ArticleForm({
         </Section>
 
         <Section number="03" title="Visuel">
-          <Field
-            label="URL image cover"
-            hint="Pour V1 : /assets/riso-article-1.svg | /assets/riso-article-2.svg ou URL externe."
-          >
-            <Input
+          <Field label="Image cover" hint="JPG, PNG ou WebP. Ratio 16:10 idéal pour le magazine.">
+            <ImageUploader
               name="cover_image"
-              defaultValue={article.cover_image ?? ""}
-              placeholder="/assets/riso-article-1.svg"
+              defaultValue={article.cover_image}
+              folder="articles"
+              aspect="16/10"
             />
           </Field>
         </Section>

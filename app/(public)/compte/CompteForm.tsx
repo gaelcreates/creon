@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CategoryPicker } from "@/components/CategoryPicker";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 
 const CATEGORIES = [
   "Mode",
@@ -197,34 +198,14 @@ export function CompteForm({
           title="Identité"
           description="Ce qui apparaît en haut de ta page publique."
         >
-          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-5 items-start">
-            <div className="aspect-square bg-creme-fonce border-2 border-noir overflow-hidden flex items-center justify-center">
-              {creator.profile_image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={creator.profile_image}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="font-display text-5xl text-noir/40">
-                  {initials}
-                </span>
-              )}
-            </div>
-            <div className="space-y-3">
-              <Field
-                label="URL photo profil"
-                hint="V1 : URL externe ou /assets/riso-portrait-1.svg. Upload réel en Sprint 5."
-              >
-                <Input
-                  name="profile_image"
-                  defaultValue={creator.profile_image ?? ""}
-                  placeholder="https://… ou /assets/…"
-                />
-              </Field>
-            </div>
-          </div>
+          <Field label="Photo de profil" hint="Carrée, ratio 1:1.">
+            <ImageUploader
+              name="profile_image"
+              defaultValue={creator.profile_image}
+              folder="creators"
+              shape="square"
+            />
+          </Field>
 
           <Field label="Nom d'auteur·rice *">
             <Input
@@ -324,11 +305,12 @@ export function CompteForm({
           title="Image cover (bannière)"
           description="Affichée tout en haut de ta page publique. Ratio 21:9 idéal. Optionnel."
         >
-          <Field label="URL image cover">
-            <Input
+          <Field label="Image cover" hint="Optionnel. Si absent, fond beige texturé.">
+            <ImageUploader
               name="cover_image"
-              defaultValue={creator.cover_image ?? ""}
-              placeholder="https://… ou /assets/…"
+              defaultValue={creator.cover_image}
+              folder="creators"
+              shape="wide"
             />
           </Field>
         </Section>
