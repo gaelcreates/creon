@@ -7,10 +7,16 @@ type Props = {
   name: string;
   options: string[];
   max?: number;
+  initial?: string[];
 };
 
-export function CategoryPicker({ name, options, max = 3 }: Props) {
-  const [selected, setSelected] = useState<string[]>([]);
+export function CategoryPicker({
+  name,
+  options,
+  max = 3,
+  initial = [],
+}: Props) {
+  const [selected, setSelected] = useState<string[]>(initial);
 
   function toggle(opt: string) {
     setSelected((prev) => {
