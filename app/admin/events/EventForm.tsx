@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CategoryPicker } from "@/components/CategoryPicker";
+import { DateTimePickerInput } from "@/components/admin/DateTimePickerInput";
 
 type Creator = { id: string; display_name: string };
 
@@ -51,13 +52,6 @@ const CATEGORIES = [
   "Design",
   "Artisanat",
 ];
-
-function toDatetimeLocal(iso?: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const tzOffset = d.getTimezoneOffset() * 60000;
-  return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-}
 
 const selectClass =
   "w-full px-4 py-3 border-2 border-noir bg-creme font-body text-base text-noir focus:outline-none focus:border-accent transition-colors";
@@ -173,19 +167,19 @@ export function EventForm({
 
         <Section number="02" title="Date & lieu">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Date de début *">
-              <Input
-                type="datetime-local"
+            <Field label="Date & heure de début *">
+              <DateTimePickerInput
                 name="date_start"
-                defaultValue={toDatetimeLocal(event.date_start)}
+                defaultValue={event.date_start ?? undefined}
                 required
+                placeholder="Date de début…"
               />
             </Field>
-            <Field label="Date de fin (optionnel)">
-              <Input
-                type="datetime-local"
+            <Field label="Date & heure de fin (optionnel)">
+              <DateTimePickerInput
                 name="date_end"
-                defaultValue={toDatetimeLocal(event.date_end)}
+                defaultValue={event.date_end ?? undefined}
+                placeholder="Date de fin…"
               />
             </Field>
           </div>
