@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-const cols = [
+type FooterLink = { href: string; label: string; external?: boolean };
+type FooterCol = { title: string; links: FooterLink[] };
+
+const cols: FooterCol[] = [
   {
     title: "Le mag",
     links: [
