@@ -7,20 +7,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const supabase = await createClient();
 
-  const [eventsRes, articlesRes, creatorsRes] = await Promise.all([
-    supabase
-      .from("events")
-      .select("slug, published_at, date_start")
-      .eq("status", "published"),
-    supabase
-      .from("editorial_articles")
-      .select("slug, published_at, updated_at")
-      .eq("status", "published"),
-    supabase
-      .from("creators")
-      .select("handle, updated_at")
-      .eq("status", "active"),
-  ]);
+  const [eventsRes, articlesRes, creatorsRes, postsRes, productionsRes] =
+    await Promise.all([
+      supabase
+        .from("events")
+        .select("slug, published_at, date_start")
+        .eq("status", "published"),
+      supabase
+        .from("editorial_articles")
+        .select("slug, published_at, updated_at")
+        .eq("status", "published"),
+      supabase
+        .from("creators")
+        .select("handle, updated_at")
+        .eq("status", "active"),
+      supabase
+        .from("creator_posts")
+        .select(
+          "slug, published_at, updated_at, creator:creators!inner(handle, status)",
+        )
+        .eq("status", "published"),
+      supabase
+        .from("productions_references")
+        .select("slug, created_at")
+        .eq("status", "published"),
+    ]);
 
   const staticPaths: Array<{
     path: string;
@@ -28,9 +39,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFreq: "weekly" | "monthly" | "daily";
   }> = [
     { path: "", priority: 1.0, changeFreq: "daily" },
+    { path: "/feed", priority: 0.95, changeFreq: "daily" },
     { path: "/events", priority: 0.9, changeFreq: "daily" },
     { path: "/articles", priority: 0.9, changeFreq: "weekly" },
     { path: "/createurs", priority: 0.9, changeFreq: "weekly" },
+    { path: "/services", priority: 0.85, changeFreq: "weekly" },
+    { path: "/productions", priority: 0.7, changeFreq: "monthly" },
     { path: "/newsletter", priority: 0.7, changeFreq: "monthly" },
     { path: "/a-propos", priority: 0.5, changeFreq: "monthly" },
     { path: "/proposer-mon-profil", priority: 0.5, changeFreq: "monthly" },
@@ -66,6 +80,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: c.updated_at ? new Date(c.updated_at) : now,
       changeFrequency: "weekly" as const,
       priority: 0.6,
+    })),
+    ...((postsRes.data ?? []) as unknown as Array<{
+      slug: string;
+      published_at: string | null;
+      updated_at: string | null;
+      creator: { handle: string };
+    }>).map((p) => ({
+      url: `${baseUrl}/createurs/${p.creator.handle}/${p.slug}`,
+      lastModified: p.updated_at
+        ? new Date(p.updated_at)
+        : p.published_at
+          ? new Date(p.published_at)
+          : now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+    ...(productionsRes.data ?? []).map((pr) => ({
+      url: `${baseUrl}/productions#${pr.slug}`,
+      lastModified: pr.created_at ? new Date(pr.created_at) : now,
+      changeFrequency: "monthly" as const,
+      priority: 0.4,
     })),
   ];
 }

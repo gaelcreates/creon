@@ -4,6 +4,7 @@ import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
+import { HeroAnimated } from "@/components/HeroAnimated";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate, formatArticleDate } from "@/lib/format";
 
@@ -228,30 +229,18 @@ export default async function Home() {
 
   return (
     <>
-      {/* HERO (placeholder cinématique — Chunk 7) */}
-      <section className="px-6 lg:px-14 pt-16 pb-20 lg:pt-24 lg:pb-28 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-6">CREON · 2026</p>
-        <h1 className="display-1 max-w-5xl mb-6">{heroTitle}</h1>
-        <p className="lead text-noir-doux max-w-2xl">{heroSubtitle}</p>
-        <div className="flex flex-wrap gap-3 mt-10">
-          <Link
-            href="/feed"
-            className={buttonVariants({ variant: "primary", size: "lg" })}
-          >
-            Explorer le feed
-          </Link>
-          <Link
-            href="/proposer-mon-profil"
-            className={buttonVariants({ variant: "secondary", size: "lg" })}
-          >
-            Devenir créateur
-          </Link>
-        </div>
-        <p className="mono-meta text-noir-doux mt-12 max-w-md">
-          ↳ Hero cinématique 3D en cours de design — placeholder statique
-          en attendant.
-        </p>
-      </section>
+      <div className="relative">
+        <HeroAnimated
+          eyebrow="CREON · 2026"
+          title={heroTitle}
+          subtitle={heroSubtitle}
+          ctaPrimary={{ label: "Explorer le feed", href: "/feed" }}
+          ctaSecondary={{
+            label: "Devenir créateur",
+            href: "/proposer-mon-profil",
+          }}
+        />
+      </div>
 
       <hr className="border-0 border-t border-noir m-0" />
 
