@@ -2,20 +2,19 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Tag } from "@/components/ui/Tag";
-import { cn } from "@/lib/cn";
 import { formatArticleDate, buildQuery } from "@/lib/format";
 
 const TYPES: Array<{ value: string; label: string }> = [
   { value: "coulisses", label: "Coulisses" },
   { value: "profil", label: "Profil" },
   { value: "educatif", label: "Éducatif" },
-  { value: "annonce", label: "Annonce" },
+  { value: "signature", label: "Signature" },
 ];
 
 export const metadata = {
   title: "Articles — CREON",
   description:
-    "Dossiers, portraits, coulisses : la lecture longue de la scène créative suisse romande.",
+    "Dossiers, portraits, coulisses : la lecture longue signée par CREON crew.",
 };
 
 type ArticleRow = {
@@ -24,7 +23,7 @@ type ArticleRow = {
   title: string;
   excerpt: string | null;
   cover_image: string | null;
-  type: "coulisses" | "profil" | "educatif" | "annonce";
+  type: "coulisses" | "profil" | "educatif" | "signature";
   reading_time: number | null;
   author: string;
   published_at: string | null;
@@ -35,7 +34,7 @@ const typeLabels: Record<ArticleRow["type"], string> = {
   coulisses: "Coulisses",
   profil: "Profil",
   educatif: "Éducatif",
-  annonce: "Annonce",
+  signature: "Signature",
 };
 
 export default async function ArticlesPage({
@@ -64,46 +63,43 @@ export default async function ArticlesPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-12 pb-12 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">
-          Lecture longue · ~5–15 min
+      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">
+          Lecture longue · CREON crew
         </p>
-        <h1 className="font-display text-[clamp(56px,8.6vw,140px)] leading-[0.86] m-0 tracking-tight">
-          Les <span className="hl-block">dossiers</span>.
-        </h1>
-        <p className="font-body text-[17px] leading-relaxed mt-8 max-w-[640px]">
-          Coulisses, portraits, guides pratiques, annonces. Pas de news flash :
-          uniquement ce qui vaut un vrai temps de lecture.
+        <h1 className="display-1 max-w-4xl">Les dossiers.</h1>
+        <p className="lead text-noir-doux mt-6 max-w-2xl">
+          Coulisses, portraits, guides pratiques, signatures. Pas de news
+          flash : uniquement ce qui vaut un vrai temps de lecture.
         </p>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
       <section className="px-6 lg:px-14 py-8 max-w-[1320px] mx-auto w-full">
         <div className="flex flex-wrap gap-2">
-          <FilterChip
-            label="Tous les types"
-            href={`/articles`}
-            active={!type}
-          />
+          <ChipLink href="/articles" active={!type}>
+            Tous les types
+          </ChipLink>
           {TYPES.map((t) => (
-            <FilterChip
+            <ChipLink
               key={t.value}
-              label={t.label}
               href={`/articles${buildQuery({ type: type === t.value ? null : t.value })}`}
               active={type === t.value}
-            />
+            >
+              {t.label}
+            </ChipLink>
           ))}
         </div>
       </section>
 
-      <hr className="border-0 border-t-[1.5px] border-noir/30 m-0 max-w-[1320px] mx-auto" />
+      <hr className="border-0 border-t border-noir/15 m-0 max-w-[1320px] mx-auto" />
 
       <section className="px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
         {list.length === 0 ? (
-          <div className="border-2 border-noir bg-creme p-10 text-center">
-            <p className="font-display text-3xl mb-3">Aucun dossier ici.</p>
-            <p className="font-body text-noir-doux">
+          <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
+            <p className="heading-2 mb-3">Aucun dossier ici.</p>
+            <p className="small text-noir-doux">
               {type
                 ? "Tente un autre type ou regarde toute la liste."
                 : "Premiers dossiers en cours d'écriture. Reviens bientôt."}
@@ -114,32 +110,32 @@ export default async function ArticlesPage({
             {featured && (
               <Link
                 href={`/articles/${featured.slug}`}
-                className="block mb-12 group"
+                className="block mb-10 group"
               >
-                <article className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 border-[2.5px] border-noir bg-creme overflow-hidden transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--color-noir)]">
-                  <div className="aspect-[16/10] lg:aspect-auto overflow-hidden border-b-[2.5px] lg:border-b-0 lg:border-r-[2.5px] border-noir">
+                <article className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-0 border border-noir bg-creme-clair rounded-lg overflow-hidden transition-all duration-150 ease-out hover:-translate-y-1 hover:border-accent hover:shadow-[0_12px_28px_-10px_rgba(16,6,9,0.15)]">
+                  <div className="aspect-[16/10] lg:aspect-auto overflow-hidden border-b lg:border-b-0 lg:border-r border-noir bg-creme-fonce">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={featured.cover_image ?? "/assets/riso-article-2.svg"}
                       alt=""
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                   </div>
                   <div className="p-6 lg:p-10 flex flex-col gap-4 justify-center">
                     <div className="flex items-center justify-between">
-                      <Tag variant="dark">{typeLabels[featured.type]}</Tag>
+                      <Tag variant="soft">{typeLabels[featured.type]}</Tag>
                       <span className="mono-meta text-noir-doux">
-                        {featured.reading_time ?? "—"} MIN ·{" "}
+                        {featured.reading_time ?? "—"} min ·{" "}
                         {featured.published_at
                           ? formatArticleDate(featured.published_at)
                           : ""}
                       </span>
                     </div>
-                    <h2 className="font-display text-[clamp(28px,4vw,52px)] leading-[0.94] m-0 tracking-tight">
+                    <h2 className="display-2 leading-[0.95]">
                       {featured.title}
                     </h2>
                     {featured.excerpt && (
-                      <p className="font-body text-base leading-relaxed text-noir-doux">
+                      <p className="body text-noir-doux leading-relaxed">
                         {featured.excerpt}
                       </p>
                     )}
@@ -152,7 +148,7 @@ export default async function ArticlesPage({
             )}
 
             {rest.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {rest.map((a) => (
                   <ArticleCard
                     key={a.id}
@@ -166,6 +162,7 @@ export default async function ArticlesPage({
                         ? formatArticleDate(a.published_at)
                         : ""
                     }
+                    excerpt={a.excerpt}
                   />
                 ))}
               </div>
@@ -177,26 +174,25 @@ export default async function ArticlesPage({
   );
 }
 
-function FilterChip({
-  label,
+function ChipLink({
   href,
   active,
+  children,
 }: {
-  label: string;
   href: string;
   active: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className={cn(
-        "inline-flex items-center px-4 py-1.5 border-2 border-noir font-body text-sm uppercase tracking-wider transition-colors",
+      className={
         active
-          ? "bg-accent text-noir"
-          : "bg-creme text-noir hover:bg-creme-fonce",
-      )}
+          ? "inline-flex items-center px-3.5 py-1.5 rounded-md border border-accent bg-accent text-noir font-body text-[13px] font-medium transition-all duration-150"
+          : "inline-flex items-center px-3.5 py-1.5 rounded-md border border-noir bg-creme-clair text-noir font-body text-[13px] font-medium hover:bg-creme-fonce transition-all duration-150"
+      }
     >
-      {label}
+      {children}
     </Link>
   );
 }

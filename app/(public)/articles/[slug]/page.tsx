@@ -13,7 +13,7 @@ type ArticleDetail = {
   excerpt: string | null;
   content_html: string | null;
   cover_image: string | null;
-  type: "coulisses" | "profil" | "educatif" | "annonce";
+  type: "coulisses" | "profil" | "educatif" | "signature";
   reading_time: number | null;
   author: string;
   published_at: string | null;
@@ -25,7 +25,7 @@ const typeLabels: Record<ArticleDetail["type"], string> = {
   coulisses: "Coulisses",
   profil: "Profil",
   educatif: "Éducatif",
-  annonce: "Annonce",
+  signature: "Signature",
 };
 
 export async function generateMetadata({
@@ -72,7 +72,7 @@ export default async function ArticleDetailPage({
   const { data: similar } = await supabase
     .from("editorial_articles")
     .select(
-      "id, slug, title, cover_image, type, reading_time, published_at",
+      "id, slug, title, cover_image, type, reading_time, published_at, excerpt",
     )
     .eq("status", "published")
     .neq("id", art.id)
@@ -82,44 +82,38 @@ export default async function ArticleDetailPage({
 
   return (
     <article>
-      {/* Header */}
-      <section className="px-6 lg:px-14 pt-8 pb-10 max-w-[820px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-5">
+      <section className="px-6 lg:px-14 pt-10 pb-10 max-w-[820px] mx-auto w-full">
+        <p className="mono-meta text-noir-doux mb-6">
           <Link
             href="/articles"
-            className="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
+            className="hover:text-accent-deep transition-colors"
           >
             ← Tous les dossiers
           </Link>
         </p>
 
         <div className="flex items-center gap-3 mb-6">
-          <Tag variant="dark">{typeLabels[art.type]}</Tag>
+          <Tag variant="soft">{typeLabels[art.type]}</Tag>
           <span className="mono-meta text-noir-doux">
-            {art.reading_time ?? "—"} MIN
+            {art.reading_time ?? "—"} min
           </span>
         </div>
 
-        <h1 className="font-display text-[clamp(40px,6vw,88px)] leading-[0.92] m-0 tracking-tight">
-          {art.title}
-        </h1>
+        <h1 className="display-1">{art.title}</h1>
 
         {art.subtitle && (
-          <p className="font-body text-[20px] leading-relaxed text-noir-doux mt-6">
-            {art.subtitle}
-          </p>
+          <p className="lead text-noir-doux mt-6">{art.subtitle}</p>
         )}
 
-        <p className="mono-meta text-noir-doux mt-6 pt-6 border-t-[1.5px] border-noir/30">
+        <p className="mono-meta text-noir-doux mt-8 pt-6 border-t border-noir/15">
           par <span className="text-noir font-medium">{art.author}</span>
           {art.published_at && ` · ${formatArticleDate(art.published_at)}`}
         </p>
       </section>
 
-      {/* Cover */}
       {art.cover_image && (
-        <section className="px-6 lg:px-14 mb-12 max-w-[1080px] mx-auto w-full">
-          <div className="aspect-[16/10] overflow-hidden border-[2.5px] border-noir shadow-[6px_6px_0_var(--color-noir)]">
+        <section className="px-6 lg:px-14 mb-10 max-w-[1080px] mx-auto w-full">
+          <div className="aspect-[16/10] overflow-hidden border border-noir rounded-lg bg-creme-fonce">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={art.cover_image}
@@ -130,7 +124,6 @@ export default async function ArticleDetailPage({
         </section>
       )}
 
-      {/* Content */}
       <section className="px-6 lg:px-14 py-8 max-w-[720px] mx-auto w-full">
         {art.content_html ? (
           <div
@@ -138,30 +131,29 @@ export default async function ArticleDetailPage({
             dangerouslySetInnerHTML={{ __html: art.content_html }}
           />
         ) : (
-          <p className="font-body text-noir-doux italic">
+          <p className="body text-noir-doux italic">
             (Contenu en cours de rédaction.)
           </p>
         )}
       </section>
 
-      {/* Linked creator */}
       {art.creator && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 max-w-[820px] mx-auto w-full">
+        <section className="border-t border-noir px-6 lg:px-14 py-10 max-w-[820px] mx-auto w-full">
           <p className="eyebrow text-noir-doux mb-4">À découvrir</p>
           <Link
             href={`/createurs/${art.creator.handle}`}
-            className="inline-flex items-center gap-4 border-2 border-noir bg-creme px-5 py-4 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-noir)] transition-all"
+            className="inline-flex items-center gap-4 border border-noir bg-creme-clair px-5 py-4 rounded-lg hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_24px_-8px_rgba(16,6,9,0.12)] transition-all duration-150 w-fit"
           >
-            <div className="w-14 h-14 bg-creme-fonce border-2 border-noir flex items-center justify-center font-display text-xl text-noir/40">
+            <div className="w-12 h-12 rounded-full bg-creme-fonce border border-noir flex items-center justify-center mono-meta text-noir-doux">
               {art.creator.display_name
                 .split(" ")
-                .map((p) => p[0])
+                .map((p: string) => p[0])
                 .join("")
                 .slice(0, 2)
                 .toUpperCase()}
             </div>
             <div>
-              <p className="font-display text-2xl leading-none">
+              <p className="heading-3 leading-tight">
                 {art.creator.display_name}
               </p>
               {art.creator.city && (
@@ -170,23 +162,18 @@ export default async function ArticleDetailPage({
                 </p>
               )}
             </div>
-            <span className="ml-3 mono-meta">→</span>
+            <span className="ml-3 mono-meta text-noir-doux">→</span>
           </Link>
         </section>
       )}
 
-      {/* Similar */}
       {similar && similar.length > 0 && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-          <div className="mb-7">
-            <p className="eyebrow text-noir-doux">
-              Continuer · {typeLabels[art.type]}
-            </p>
-            <h2 className="font-display text-4xl sm:text-5xl mt-1.5 leading-[0.92]">
-              Articles similaires
-            </h2>
+        <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="mono-meta text-noir-doux">→</span>
+            <h2 className="heading-1">Continuer · {typeLabels[art.type]}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {similar.map((a) => (
               <ArticleCard
                 key={a.id}
@@ -196,6 +183,7 @@ export default async function ArticleDetailPage({
                 type={typeLabels[a.type as ArticleDetail["type"]]}
                 reading_time={a.reading_time ?? 0}
                 date={a.published_at ? formatArticleDate(a.published_at) : ""}
+                excerpt={a.excerpt}
               />
             ))}
           </div>

@@ -1,79 +1,90 @@
 export const metadata = {
   title: "Mentions légales — CREON",
   description:
-    "Éditeur, hébergeur et informations légales de CREON, le média digital suisse romand.",
+    "Éditeur, hébergeur et informations légales de CREON, plateforme suisse pour les créateurs.",
 };
+
+function Block({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="eyebrow text-noir-doux">{title}</p>
+      <div className="body leading-relaxed">{children}</div>
+    </div>
+  );
+}
 
 export default function MentionsLegalesPage() {
   return (
     <article>
-      <section className="px-6 lg:px-14 pt-12 pb-12 max-w-3xl mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">Légal</p>
-        <h1 className="font-display text-[clamp(48px,7vw,96px)] leading-[0.86] m-0 tracking-tight">
-          Mentions <span className="hl-block">légales</span>.
+      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-3xl mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">Légal</p>
+        <h1 className="display-1">
+          Mentions <span className="hl">légales</span>.
         </h1>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
-      <section className="px-6 lg:px-14 py-12 max-w-3xl mx-auto w-full space-y-10 font-body text-base leading-relaxed">
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Éditeur du site</p>
+      <section className="px-6 lg:px-14 py-12 max-w-3xl mx-auto w-full space-y-10">
+        <Block title="Éditeur du site">
           <p>
-            CREON — Média digital indépendant.
+            CREON — Plateforme digitale indépendante.
             <br />
             Suisse romande.
             <br />
             Contact :{" "}
             <a
               href="mailto:hello@creon.ch"
-              className="text-accent border-b-2 border-accent hover:text-accent-deep"
+              className="text-accent-deep underline decoration-accent decoration-[1.5px] underline-offset-4 hover:text-accent transition-colors"
             >
               hello@creon.ch
             </a>
           </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Direction de la publication</p>
+        <Block title="Direction de la publication">
           <p>Gaël — fondateur et rédacteur en chef.</p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Hébergement</p>
+        <Block title="Hébergement">
           <p>
-            Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.
+            Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789,
+            États-Unis.
             <br />
             Base de données : Supabase, hébergée en Europe (Frankfurt).
           </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Propriété intellectuelle</p>
+        <Block title="Propriété intellectuelle">
           <p>
-            L&apos;ensemble des contenus (textes, images, identité visuelle)
-            publiés sur ce site est la propriété de CREON sauf mention
-            contraire. Les contenus contribués par les créateurs référencés
-            restent leur propriété ; ils nous accordent un droit de
-            représentation dans le cadre du média.
+            L&apos;ensemble des contenus (textes, images, identité
+            visuelle) publiés par CREON crew sur ce site est la propriété
+            de CREON sauf mention contraire. Les contenus contribués par
+            les créateurs (posts, articles, services) restent leur
+            propriété ; ils accordent à CREON un droit de représentation
+            dans le cadre de la plateforme.
           </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Responsabilité</p>
+        <Block title="Responsabilité">
           <p>
-            Les informations publiées sont vérifiées au mieux mais ne
-            sauraient engager la responsabilité de CREON en cas
-            d&apos;inexactitude. Les liens externes pointant vers des sites
-            tiers sont fournis à titre indicatif et nous ne garantissons pas
-            leur contenu.
+            Les contenus publiés par les créateurs n&apos;engagent que leur
+            responsabilité. CREON modère les signalements selon ses
+            conditions d&apos;utilisation. Les liens externes pointant vers
+            des sites tiers sont fournis à titre indicatif et nous ne
+            garantissons pas leur contenu.
           </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">Droit applicable</p>
+        <Block title="Droit applicable">
           <p>Suisse · for juridique : Lausanne (VD).</p>
-        </div>
+        </Block>
       </section>
     </article>
   );

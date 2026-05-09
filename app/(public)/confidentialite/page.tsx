@@ -4,51 +4,68 @@ export const metadata = {
     "Politique de confidentialité de CREON : ce qu'on collecte, ce qu'on en fait, tes droits.",
 };
 
+function Block({
+  number,
+  title,
+  children,
+}: {
+  number: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="eyebrow text-noir-doux">
+        {number} — {title}
+      </p>
+      <div className="body leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
 export default function ConfidentialitePage() {
   return (
     <article>
-      <section className="px-6 lg:px-14 pt-12 pb-12 max-w-3xl mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">Légal</p>
-        <h1 className="font-display text-[clamp(48px,7vw,96px)] leading-[0.86] m-0 tracking-tight">
-          <span className="hl-block">Confidentialité</span>.
+      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-3xl mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">Légal</p>
+        <h1 className="display-1">
+          <span className="hl">Confidentialité</span>.
         </h1>
-        <p className="font-body text-[17px] leading-relaxed mt-8 max-w-[640px]">
+        <p className="lead text-noir-doux mt-6 max-w-2xl">
           On respecte ta vie privée. Pas de tracker tiers, pas de revente,
-          pas de cookies de pub. Seulement ce qui est strictement nécessaire
-          pour faire tourner le site.
+          pas de cookies de pub. Seulement ce qui est strictement
+          nécessaire pour faire tourner la plateforme.
         </p>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
-      <section className="px-6 lg:px-14 py-12 max-w-3xl mx-auto w-full space-y-10 font-body text-base leading-relaxed">
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">01 — Ce qu&apos;on collecte</p>
+      <section className="px-6 lg:px-14 py-12 max-w-3xl mx-auto w-full space-y-10">
+        <Block number="01" title="Ce qu'on collecte">
           <ul className="list-disc pl-5 space-y-2">
             <li>
-              <strong>Newsletter</strong> : ton email uniquement, pour
-              t&apos;envoyer la newsletter dominicale. Désabonnement en un
-              clic.
+              <strong className="font-medium">Newsletter</strong> : ton
+              email uniquement, pour t&apos;envoyer la newsletter
+              dominicale.
             </li>
             <li>
-              <strong>Candidature créateur</strong> : nom, email, Instagram,
-              ville, catégories, pitch. Utilisés pour évaluer ta
-              candidature.
+              <strong className="font-medium">Candidature créateur</strong>{" "}
+              : nom, email, Instagram, ville, catégories, pitch.
             </li>
             <li>
-              <strong>Compte créateur</strong> : informations de profil que
-              tu choisis de partager (photo, bio, liens, etc.).
+              <strong className="font-medium">Compte créateur</strong> :
+              informations de profil + posts/articles/services que tu
+              publies.
             </li>
             <li>
-              <strong>Logs serveur</strong> : adresses IP et user-agents
-              conservés temporairement par notre hébergeur (Vercel) à des
-              fins de sécurité.
+              <strong className="font-medium">Logs serveur</strong> :
+              adresses IP et user-agents conservés temporairement par notre
+              hébergeur (Vercel) à des fins de sécurité.
             </li>
           </ul>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">02 — Ce qu&apos;on n&apos;a pas</p>
+        <Block number="02" title="Ce qu'on n'a pas">
           <ul className="list-disc pl-5 space-y-2">
             <li>Aucun cookie de tracking publicitaire.</li>
             <li>Aucun pixel Facebook, Google Analytics, ou similaire.</li>
@@ -57,82 +74,69 @@ export default function ConfidentialitePage() {
               commerciales.
             </li>
           </ul>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">
-            03 — Cookies & stockage local
-          </p>
+        <Block number="03" title="Cookies & stockage local">
           <p>
-            On utilise uniquement des cookies <strong>essentiels</strong>{" "}
-            pour la connexion (session Supabase) sur les pages privées
-            (/compte, /admin). Aucun cookie sur les pages publiques pour les
-            visiteurs anonymes.
+            Cookies <strong className="font-medium">essentiels</strong>{" "}
+            uniquement, pour la connexion (session Supabase) sur les pages
+            privées (/compte, /admin). Aucun cookie sur les pages publiques
+            pour les visiteurs anonymes.
           </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">04 — Tes droits</p>
-          <p>
-            Tu peux à tout moment :
-          </p>
+        <Block number="04" title="Tes droits">
           <ul className="list-disc pl-5 space-y-2">
             <li>
-              <strong>Te désabonner</strong> de la newsletter via le lien
-              dans chaque email.
+              <strong className="font-medium">Te désabonner</strong> de la
+              newsletter via le lien dans chaque email.
             </li>
             <li>
-              <strong>Supprimer ton compte créateur</strong> depuis{" "}
-              <span className="font-medium">/compte</span>.
+              <strong className="font-medium">Supprimer ton compte créateur</strong>{" "}
+              depuis <span className="font-medium">/compte</span>.
             </li>
             <li>
-              <strong>Demander l&apos;export ou l&apos;effacement</strong> de
-              tes données personnelles en écrivant à{" "}
+              <strong className="font-medium">Demander l&apos;export ou l&apos;effacement</strong>{" "}
+              de tes données en écrivant à{" "}
               <a
                 href="mailto:hello@creon.ch"
-                className="text-accent border-b-2 border-accent hover:text-accent-deep"
+                className="text-accent-deep underline decoration-accent decoration-[1.5px] underline-offset-4 hover:text-accent transition-colors"
               >
                 hello@creon.ch
               </a>
               . Réponse sous 30 jours.
             </li>
           </ul>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">05 — Hébergement & traitement</p>
+        <Block number="05" title="Hébergement & traitement">
           <p>
             Tes données transitent par et sont stockées chez :
           </p>
-          <ul className="list-disc pl-5 space-y-2">
+          <ul className="list-disc pl-5 space-y-2 mt-2">
             <li>
-              <strong>Vercel</strong> (hébergement web, USA)
+              <strong className="font-medium">Vercel</strong> (hébergement
+              web, USA)
             </li>
             <li>
-              <strong>Supabase</strong> (base de données + auth, Europe —
-              Frankfurt)
+              <strong className="font-medium">Supabase</strong> (base de
+              données + auth, Europe — Frankfurt)
             </li>
           </ul>
-          <p>
-            On ne contrôle pas leurs politiques propres, mais on choisit ces
-            prestataires pour leur conformité RGPD et leur emplacement EU
-            quand possible.
-          </p>
-        </div>
+        </Block>
 
-        <div className="space-y-3">
-          <p className="eyebrow text-noir-doux">06 — Contact</p>
+        <Block number="06" title="Contact">
           <p>
             Question, plainte, demande d&apos;effacement :{" "}
             <a
               href="mailto:hello@creon.ch"
-              className="text-accent border-b-2 border-accent hover:text-accent-deep"
+              className="text-accent-deep underline decoration-accent decoration-[1.5px] underline-offset-4 hover:text-accent transition-colors"
             >
               hello@creon.ch
             </a>
             .
           </p>
-        </div>
+        </Block>
       </section>
     </article>
   );

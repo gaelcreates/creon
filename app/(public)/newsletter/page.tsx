@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Card } from "@/components/ui/Card";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata = {
@@ -64,115 +65,103 @@ export default async function NewsletterPage({
 
   return (
     <>
-      <section className="bg-accent border-b-[2.5px] border-noir grain-bg grain-on-orange">
-        <div className="relative z-[2] px-6 lg:px-14 py-20 lg:py-24 max-w-[1320px] mx-auto w-full">
-          <p className="eyebrow mb-4">Newsletter dominicale · ~600 mots</p>
-          <h1 className="font-display text-[clamp(56px,8.6vw,140px)] leading-[0.88] m-0 tracking-tight">
-            La crème<br />du vendredi,<br />direct dans ta boîte.
-          </h1>
+      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">
+          Newsletter dominicale · ~600 mots
+        </p>
+        <h1 className="display-1 max-w-4xl">
+          Reçois la <span className="hl">crème</span> du vendredi, direct
+          dans ta boîte.
+        </h1>
+        <p className="lead text-noir-doux mt-6 max-w-2xl">
+          Cinq events à pas rater. Un créateur du moment. Un dossier à
+          lire. Pas de spam, désabonnement en un clic.
+        </p>
 
-          <div className="mt-12 max-w-md">
-            {subscribed ? (
-              <div className="border-[2.5px] border-noir bg-creme p-6 shadow-[6px_6px_0_var(--color-noir)]">
-                <p className="font-display text-3xl leading-tight">
-                  Bienvenue à <span className="hl">bord</span>.
-                </p>
-                <p className="mt-3 text-base leading-relaxed">
-                  T&apos;es inscrit·e. Premier email vendredi prochain.
-                </p>
-              </div>
-            ) : (
-              <>
-                <form
-                  action={subscribeAction}
-                  className="flex border-[2.5px] border-noir bg-creme shadow-[6px_6px_0_var(--color-noir)]"
+        <div className="mt-10 max-w-md">
+          {subscribed ? (
+            <Card className="p-6 border-accent">
+              <p className="heading-3 mb-2">
+                Bienvenue à <span className="hl">bord</span>.
+              </p>
+              <p className="body text-noir-doux">
+                T&apos;es inscrit·e. Premier email vendredi prochain.
+              </p>
+            </Card>
+          ) : (
+            <>
+              <form
+                action={subscribeAction}
+                className="flex border border-noir bg-creme-clair rounded-md overflow-hidden"
+              >
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="ton@email.ch"
+                  required
+                  className="flex-1 px-4 py-3 border-0 bg-transparent font-body text-[15px] outline-none placeholder:text-noir-doux/50"
+                />
+                <button
+                  type="submit"
+                  className="bg-accent text-noir border-0 border-l border-noir px-5 font-body text-[14px] font-medium cursor-pointer hover:bg-accent-deep transition-colors"
                 >
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="ton@email.ch"
-                    required
-                    className="flex-1 border-0 bg-transparent px-5 py-5 font-body text-[17px] outline-none placeholder:text-noir/40"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-noir text-creme border-0 border-l-[2.5px] border-noir px-6 font-body text-[13px] tracking-[0.14em] uppercase cursor-pointer hover:bg-noir-doux transition-colors"
-                  >
-                    Je m&apos;abonne →
-                  </button>
-                </form>
-                {error && (
-                  <p className="mono-meta mt-3 text-noir bg-creme inline-block px-2 py-1 border-2 border-noir">
-                    {error}
-                  </p>
-                )}
-                <p className="mono-meta mt-3.5 text-xs">
-                  4 200+ abonnés · taux d&apos;ouverture 64 % · désabonnement
-                  libre
-                </p>
-              </>
-            )}
-          </div>
+                  S&apos;abonner →
+                </button>
+              </form>
+              {error && (
+                <p className="mono-meta mt-3 text-rouge-brique">{error}</p>
+              )}
+              <p className="mono-meta text-noir-doux mt-3">
+                4 200+ abonnés · taux d&apos;ouverture 64 %
+              </p>
+            </>
+          )}
         </div>
       </section>
 
-      <section className="px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
-          <p className="eyebrow text-noir-doux">01 — Le menu</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl">
-            <div>
-              <p className="font-display text-6xl leading-none">5</p>
-              <p className="mono-meta uppercase mt-2 mb-2">Events</p>
-              <p className="text-sm text-noir-doux leading-relaxed">
-                À pas rater dans les 7 prochains jours en Suisse romande.
-              </p>
-            </div>
-            <div>
-              <p className="font-display text-6xl leading-none">1</p>
-              <p className="mono-meta uppercase mt-2 mb-2">Créateur</p>
-              <p className="text-sm text-noir-doux leading-relaxed">
-                Profil court d&apos;un·e créateur·rice du moment.
-              </p>
-            </div>
-            <div>
-              <p className="font-display text-6xl leading-none">1</p>
-              <p className="mono-meta uppercase mt-2 mb-2">Dossier</p>
-              <p className="text-sm text-noir-doux leading-relaxed">
-                Article long de la semaine, à lire au lit ou dans le train.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
-          <p className="eyebrow text-noir-doux">02 — Archives</p>
+      <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
           <div>
-            <h2 className="font-display text-[44px] sm:text-6xl mt-0 mb-10 leading-[0.92]">
-              Derniers numéros
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {issues.map((issue) => (
-                <article
-                  key={issue.number}
-                  className="border-2 border-noir bg-creme p-5 space-y-3 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--color-noir)]"
-                >
-                  <div className="flex items-baseline justify-between">
-                    <span className="font-display text-3xl leading-none">
-                      {issue.number}
-                    </span>
-                    <span className="mono-meta">{issue.date}</span>
-                  </div>
-                  <h3 className="font-display text-xl leading-tight">
-                    {issue.title}
-                  </h3>
-                  <p className="text-sm text-noir-doux leading-relaxed">
-                    {issue.excerpt}
-                  </p>
-                </article>
-              ))}
-            </div>
+            <span className="mono-meta text-noir-doux">01</span>
+            <h2 className="heading-1 mt-1">Le menu</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl">
+            {[
+              { n: "5", l: "Events", d: "À pas rater dans les 7 prochains jours en Suisse romande." },
+              { n: "1", l: "Créateur", d: "Profil court d'un·e créateur·rice du moment." },
+              { n: "1", l: "Dossier", d: "Article long de la semaine, à lire au lit ou dans le train." },
+            ].map((it) => (
+              <div key={it.l}>
+                <p className="display-1 leading-none">{it.n}</p>
+                <p className="eyebrow text-noir-doux mt-2 mb-1">{it.l}</p>
+                <p className="small text-noir-doux leading-relaxed">{it.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
+          <div>
+            <span className="mono-meta text-noir-doux">02</span>
+            <h2 className="heading-1 mt-1">Derniers numéros</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {issues.map((issue) => (
+              <Card key={issue.number} hoverable className="p-5 space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <span className="heading-3">{issue.number}</span>
+                  <span className="mono-meta text-noir-doux">{issue.date}</span>
+                </div>
+                <h3 className="body font-medium leading-tight">
+                  {issue.title}
+                </h3>
+                <p className="small text-noir-doux leading-relaxed">
+                  {issue.excerpt}
+                </p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>

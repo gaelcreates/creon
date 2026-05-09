@@ -16,15 +16,15 @@ export default async function NotFound() {
       <Header creator={auth.creator} isAdmin={auth.isAdmin} />
       <main className="flex-1 flex flex-col">
         <section className="flex-1 px-6 lg:px-14 py-20 lg:py-28 max-w-[1320px] mx-auto w-full">
-          <p className="eyebrow text-noir-doux mb-4">Erreur 404</p>
-          <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-12 items-end">
+          <p className="eyebrow text-noir-doux mb-5">Erreur 404</p>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 items-end">
             <div>
-              <h1 className="font-display text-[clamp(72px,12vw,200px)] leading-[0.86] m-0 tracking-tight">
+              <h1 className="display-1">
                 Cette page<br />
                 n&apos;existe<br />
-                <span className="hl-block">pas</span>.
+                <span className="hl">pas</span>.
               </h1>
-              <p className="font-body text-[17px] leading-relaxed mt-8 max-w-[460px]">
+              <p className="lead text-noir-doux mt-8 max-w-md">
                 Elle a peut-être été déplacée, supprimée, ou n&apos;a jamais
                 vraiment existé. Pas grave — la maison reste ouverte.
               </p>
@@ -36,23 +36,23 @@ export default async function NotFound() {
                   Retour à l&apos;accueil →
                 </Link>
                 <Link
-                  href="/events"
+                  href="/feed"
                   className={buttonVariants({
                     variant: "secondary",
                     size: "lg",
                   })}
                 >
-                  Voir les events
+                  Voir le feed
                 </Link>
               </div>
             </div>
-            <div className="hidden lg:block">
-              <div className="aspect-square overflow-hidden border-[2.5px] border-noir bg-creme-fonce shadow-[6px_6px_0_var(--color-noir)] grain-bg flex items-center justify-center">
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="aspect-square w-full max-w-sm border border-noir bg-creme-clair rounded-lg flex items-center justify-center">
                 <span
-                  className="font-display text-[clamp(140px,18vw,280px)] text-noir/30 leading-none relative z-[2]"
+                  className="text-[clamp(80px,14vw,180px)] font-display font-semibold text-noir/15 leading-none select-none"
                   aria-hidden
                 >
-                  ¯\_(ツ)_/¯
+                  404
                 </span>
               </div>
             </div>

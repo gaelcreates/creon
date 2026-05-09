@@ -39,21 +39,21 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <section className="flex-1 flex items-center justify-center px-6 py-16 lg:py-20">
+    <section className="flex-1 flex items-center justify-center px-6 py-16 lg:py-24">
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-3">
           <p className="eyebrow text-noir-doux">Espace privé</p>
-          <h1 className="font-display text-[64px] leading-[0.86] m-0 tracking-tight">
-            <span className="hl-block">Connexion</span>
+          <h1 className="display-2">
+            <span className="hl">Connexion</span>
           </h1>
-          <p className="text-base text-noir-doux leading-relaxed">
+          <p className="body text-noir-doux leading-relaxed">
             Tape ton email, on t&apos;envoie un lien magique. Pas de mot de
             passe à retenir.
           </p>
         </div>
 
         {params.error && (
-          <div className="border-2 border-noir bg-accent px-4 py-3 font-body text-sm">
+          <div className="border border-rouge-brique bg-rouge-brique/10 px-4 py-3 rounded-md font-body text-[14px] text-rouge-brique">
             {params.error}
           </div>
         )}
@@ -66,16 +66,16 @@ export default async function LoginPage({
             required
             autoFocus
           />
-          <Button type="submit" size="lg" className="w-full">
+          <Button type="submit" variant="primary" size="lg" className="w-full">
             Recevoir mon lien →
           </Button>
         </form>
 
-        <p className="font-body text-sm text-noir-doux">
+        <p className="small text-noir-doux">
           Pas encore inscrit ?{" "}
           <Link
             href="/proposer-mon-profil"
-            className="text-noir underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
+            className="text-noir underline decoration-accent decoration-[1.5px] underline-offset-4 hover:text-accent-deep transition-colors"
           >
             Propose ton profil →
           </Link>

@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { EventCard } from "@/components/EventCard";
-import { Tag } from "@/components/ui/Tag";
-import { cn } from "@/lib/cn";
+import { Chip } from "@/components/ui/Chip";
 import { formatEventDate, buildQuery } from "@/lib/format";
 
 const CITIES = [
@@ -28,7 +27,7 @@ const CATEGORIES = [
 export const metadata = {
   title: "Events — CREON",
   description:
-    "Tous les events de la scène créative suisse romande, sélectionnés à la main par la rédaction de CREON.",
+    "Tous les events de la scène créative suisse romande, sélectionnés à la main par CREON crew.",
 };
 
 type EventRow = {
@@ -41,7 +40,6 @@ type EventRow = {
   city: string;
   venue: string;
   price_info: string | null;
-  short_description: string | null;
 };
 
 export default async function EventsPage({
@@ -57,7 +55,7 @@ export default async function EventsPage({
   let query = supabase
     .from("events")
     .select(
-      "id, slug, title, cover_image, categories, date_start, city, venue, price_info, short_description",
+      "id, slug, title, cover_image, categories, date_start, city, venue, price_info",
     )
     .eq("status", "published")
     .order("date_start", { ascending: true });
@@ -70,63 +68,71 @@ export default async function EventsPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-12 pb-12 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">
-          Agenda · Suisse romande
-        </p>
-        <h1 className="font-display text-[clamp(56px,8.6vw,140px)] leading-[0.86] m-0 tracking-tight">
-          Tous les <span className="hl-block">events</span>.
-        </h1>
-        <p className="font-body text-[17px] leading-relaxed mt-8 max-w-[640px]">
+      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">Agenda · Suisse romande</p>
+        <h1 className="display-1 max-w-4xl">Tous les events.</h1>
+        <p className="lead text-noir-doux mt-6 max-w-2xl">
           Vernissages, concerts, soirées, marchés, ateliers ouverts. On
           parcourt les programmes, on garde ce qui vaut le déplacement.
         </p>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
-      <section className="px-6 lg:px-14 py-10 max-w-[1320px] mx-auto w-full">
-        <div className="space-y-3">
+      <section className="px-6 lg:px-14 py-8 max-w-[1320px] mx-auto w-full space-y-4">
+        <div>
           <p className="eyebrow text-noir-doux mb-2">Villes</p>
           <div className="flex flex-wrap gap-2">
-            <FilterChip
-              label="Toutes"
-              href={`/events${buildQuery({ category })}`}
+            <Chip
               active={!city}
-            />
+              onClick={undefined}
+              {...({} as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+            >
+              <Link
+                href={`/events${buildQuery({ category })}`}
+                className="contents"
+              >
+                Toutes
+              </Link>
+            </Chip>
             {CITIES.map((c) => (
-              <FilterChip
+              <ChipLink
                 key={c}
-                label={c}
                 href={`/events${buildQuery({ city: city === c ? null : c, category })}`}
                 active={city === c}
-              />
+              >
+                {c}
+              </ChipLink>
             ))}
           </div>
-          <p className="eyebrow text-noir-doux mb-2 mt-5">Catégories</p>
+        </div>
+        <div>
+          <p className="eyebrow text-noir-doux mb-2">Catégories</p>
           <div className="flex flex-wrap gap-2">
-            <FilterChip
-              label="Toutes"
+            <ChipLink
               href={`/events${buildQuery({ city })}`}
               active={!category}
-            />
+            >
+              Toutes
+            </ChipLink>
             {CATEGORIES.map((c) => (
-              <FilterChip
+              <ChipLink
                 key={c}
-                label={c}
                 href={`/events${buildQuery({ city, category: category === c ? null : c })}`}
                 active={category === c}
-              />
+              >
+                {c}
+              </ChipLink>
             ))}
           </div>
         </div>
       </section>
 
-      <hr className="border-0 border-t-[1.5px] border-noir/30 m-0 max-w-[1320px] mx-auto" />
+      <hr className="border-0 border-t border-noir/15 m-0 max-w-[1320px] mx-auto" />
 
       <section className="px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-        <div className="flex items-baseline justify-between mb-7">
-          <p className="font-body text-sm text-noir-doux">
+        <div className="flex items-baseline justify-between mb-6">
+          <p className="small text-noir-doux">
             <span className="font-medium text-noir">{list.length}</span>{" "}
             event{list.length > 1 ? "s" : ""}
             {city ? ` à ${city}` : ""}
@@ -135,24 +141,24 @@ export default async function EventsPage({
           {(city || category) && (
             <Link
               href="/events"
-              className="font-body text-sm uppercase tracking-wider underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
+              className="mono-meta text-noir-doux hover:text-accent-deep transition-colors"
             >
-              Effacer les filtres ✕
+              Effacer ✕
             </Link>
           )}
         </div>
 
         {list.length === 0 ? (
-          <div className="border-2 border-noir bg-creme p-10 text-center">
-            <p className="font-display text-3xl mb-3">Aucun event ne match.</p>
-            <p className="font-body text-noir-doux">
+          <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
+            <p className="heading-2 mb-3">Aucun event ne match.</p>
+            <p className="small text-noir-doux">
               {city || category
                 ? "Tente avec moins de filtres ou regarde l'agenda complet."
                 : "L'agenda se remplit. Reviens dans quelques jours, ou abonne-toi à la newsletter."}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {list.map((e) => (
               <EventCard
                 key={e.id}
@@ -162,7 +168,7 @@ export default async function EventsPage({
                 category={e.categories[0] ?? "Event"}
                 date={formatEventDate(e.date_start)}
                 meta={`${e.city} · ${e.venue}`}
-                price={e.price_info ?? "À voir"}
+                price={e.price_info ?? undefined}
               />
             ))}
           </div>
@@ -172,26 +178,25 @@ export default async function EventsPage({
   );
 }
 
-function FilterChip({
-  label,
+function ChipLink({
   href,
   active,
+  children,
 }: {
-  label: string;
   href: string;
   active: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className={cn(
-        "inline-flex items-center px-4 py-1.5 border-2 border-noir font-body text-sm uppercase tracking-wider transition-colors",
+      className={
         active
-          ? "bg-accent text-noir"
-          : "bg-creme text-noir hover:bg-creme-fonce",
-      )}
+          ? "inline-flex items-center px-3.5 py-1.5 rounded-md border border-accent bg-accent text-noir font-body text-[13px] font-medium shadow-[0_1px_3px_rgba(233,106,0,0.2)] transition-all duration-150"
+          : "inline-flex items-center px-3.5 py-1.5 rounded-md border border-noir bg-creme-clair text-noir font-body text-[13px] font-medium hover:bg-creme-fonce transition-all duration-150"
+      }
     >
-      {label}
+      {children}
     </Link>
   );
 }

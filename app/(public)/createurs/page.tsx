@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorCard } from "@/components/CreatorCard";
-import { cn } from "@/lib/cn";
 import { buildQuery } from "@/lib/format";
 
 const CITIES = [
@@ -48,11 +47,12 @@ const PORTRAITS = [
 export default async function CreatorsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ city?: string; category?: string }>;
+  searchParams: Promise<{ city?: string; category?: string; q?: string }>;
 }) {
   const params = await searchParams;
   const city = params.city ?? null;
   const category = params.category ?? null;
+  const q = params.q ?? null;
 
   const supabase = await createClient();
   let query = supabase
@@ -65,84 +65,102 @@ export default async function CreatorsPage({
 
   if (city) query = query.eq("city", city);
   if (category) query = query.contains("categories", [category]);
+  if (q) query = query.ilike("display_name", `%${q}%`);
 
   const { data: creators } = await query;
   const list = (creators ?? []) as CreatorRow[];
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-12 pb-12 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">
+      <section className="px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-5">
           Annuaire · sur invitation
         </p>
-        <h1 className="font-display text-[clamp(56px,8.6vw,140px)] leading-[0.86] m-0 tracking-tight">
-          Les <span className="hl-block">créateurs</span>.
-        </h1>
-        <p className="font-body text-[17px] leading-relaxed mt-8 max-w-[640px]">
+        <h1 className="display-1 max-w-4xl">Les créateurs.</h1>
+        <p className="lead text-noir-doux mt-6 max-w-2xl">
           Mode, musique, art visuel, photo, vidéo, design, artisanat. Une
-          sélection humaine, sans algorithme. Tu te reconnais&nbsp;?{" "}
+          sélection humaine, sans algorithme. Tu te reconnais ?{" "}
           <Link
             href="/proposer-mon-profil"
-            className="text-accent border-b-2 border-accent hover:text-accent-deep"
+            className="text-accent-deep underline decoration-accent decoration-[1.5px] underline-offset-4 hover:text-accent transition-colors"
           >
             Propose ton profil →
           </Link>
         </p>
+
+        <form className="mt-8 max-w-md" action="/createurs" method="get">
+          {city && <input type="hidden" name="city" value={city} />}
+          {category && <input type="hidden" name="category" value={category} />}
+          <input
+            type="search"
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Chercher un créateur, une discipline…"
+            className="w-full px-4 py-2.5 border border-noir bg-creme-clair rounded-md font-body text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 transition-all"
+          />
+        </form>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
-      <section className="px-6 lg:px-14 py-10 max-w-[1320px] mx-auto w-full">
-        <div className="space-y-3">
+      <section className="px-6 lg:px-14 py-8 max-w-[1320px] mx-auto w-full space-y-4">
+        <div>
           <p className="eyebrow text-noir-doux mb-2">Catégories</p>
           <div className="flex flex-wrap gap-2">
-            <FilterChip
-              label="Toutes"
-              href={`/createurs${buildQuery({ city })}`}
+            <ChipLink
+              href={`/createurs${buildQuery({ city, q })}`}
               active={!category}
-            />
+            >
+              Toutes
+            </ChipLink>
             {CATEGORIES.map((c) => (
-              <FilterChip
+              <ChipLink
                 key={c}
-                label={c}
-                href={`/createurs${buildQuery({ city, category: category === c ? null : c })}`}
+                href={`/createurs${buildQuery({ city, q, category: category === c ? null : c })}`}
                 active={category === c}
-              />
+              >
+                {c}
+              </ChipLink>
             ))}
           </div>
-          <p className="eyebrow text-noir-doux mb-2 mt-5">Villes</p>
+        </div>
+        <div>
+          <p className="eyebrow text-noir-doux mb-2">Villes</p>
           <div className="flex flex-wrap gap-2">
-            <FilterChip
-              label="Toutes"
-              href={`/createurs${buildQuery({ category })}`}
+            <ChipLink
+              href={`/createurs${buildQuery({ category, q })}`}
               active={!city}
-            />
+            >
+              Toutes
+            </ChipLink>
             {CITIES.map((c) => (
-              <FilterChip
+              <ChipLink
                 key={c}
-                label={c}
-                href={`/createurs${buildQuery({ city: city === c ? null : c, category })}`}
+                href={`/createurs${buildQuery({ category, q, city: city === c ? null : c })}`}
                 active={city === c}
-              />
+              >
+                {c}
+              </ChipLink>
             ))}
           </div>
         </div>
       </section>
 
-      <hr className="border-0 border-t-[1.5px] border-noir/30 m-0 max-w-[1320px] mx-auto" />
+      <hr className="border-0 border-t border-noir/15 m-0 max-w-[1320px] mx-auto" />
 
       <section className="px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-        <div className="flex items-baseline justify-between mb-7">
-          <p className="font-body text-sm text-noir-doux">
+        <div className="flex items-baseline justify-between mb-6">
+          <p className="small text-noir-doux">
             <span className="font-medium text-noir">{list.length}</span>{" "}
             créateur{list.length > 1 ? "s" : ""}
+            {q ? ` pour "${q}"` : ""}
             {category ? ` · ${category}` : ""}
             {city ? ` à ${city}` : ""}
           </p>
-          {(city || category) && (
+          {(city || category || q) && (
             <Link
               href="/createurs"
-              className="font-body text-sm uppercase tracking-wider underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
+              className="mono-meta text-noir-doux hover:text-accent-deep transition-colors"
             >
               Effacer ✕
             </Link>
@@ -150,15 +168,13 @@ export default async function CreatorsPage({
         </div>
 
         {list.length === 0 ? (
-          <div className="border-2 border-noir bg-creme p-10 text-center">
-            <p className="font-display text-3xl mb-3">
-              Personne ne match ces filtres.
-            </p>
-            <p className="font-body text-noir-doux">
+          <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
+            <p className="heading-2 mb-3">Personne ne match.</p>
+            <p className="small text-noir-doux">
               Tente sans filtre ou{" "}
               <Link
                 href="/proposer-mon-profil"
-                className="underline decoration-accent decoration-2 underline-offset-4"
+                className="text-accent-deep underline decoration-accent underline-offset-4"
               >
                 propose ton profil
               </Link>
@@ -166,7 +182,7 @@ export default async function CreatorsPage({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-5">
             {list.map((c, i) => (
               <CreatorCard
                 key={c.id}
@@ -175,6 +191,7 @@ export default async function CreatorsPage({
                 display_handle={`@${c.handle}`}
                 category={c.categories[0] ?? "Créateur"}
                 city={c.city ?? "—"}
+                short_bio={c.short_bio}
                 portrait={c.profile_image ?? PORTRAITS[i % PORTRAITS.length]}
               />
             ))}
@@ -185,26 +202,25 @@ export default async function CreatorsPage({
   );
 }
 
-function FilterChip({
-  label,
+function ChipLink({
   href,
   active,
+  children,
 }: {
-  label: string;
   href: string;
   active: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className={cn(
-        "inline-flex items-center px-4 py-1.5 border-2 border-noir font-body text-sm uppercase tracking-wider transition-colors",
+      className={
         active
-          ? "bg-accent text-noir"
-          : "bg-creme text-noir hover:bg-creme-fonce",
-      )}
+          ? "inline-flex items-center px-3.5 py-1.5 rounded-md border border-accent bg-accent text-noir font-body text-[13px] font-medium transition-all duration-150"
+          : "inline-flex items-center px-3.5 py-1.5 rounded-md border border-noir bg-creme-clair text-noir font-body text-[13px] font-medium hover:bg-creme-fonce transition-all duration-150"
+      }
     >
-      {label}
+      {children}
     </Link>
   );
 }

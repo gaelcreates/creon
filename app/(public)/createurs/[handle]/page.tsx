@@ -4,11 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Tag } from "@/components/ui/Tag";
 import { EventCard } from "@/components/EventCard";
 import { ArticleCard } from "@/components/ArticleCard";
+import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
 import { getAuthState } from "@/lib/auth";
-import {
-  formatEventDate,
-  formatArticleDate,
-} from "@/lib/format";
+import { formatEventDate, formatArticleDate } from "@/lib/format";
 
 type CreatorDetail = {
   id: string;
@@ -29,7 +27,7 @@ const typeLabels: Record<string, string> = {
   coulisses: "Coulisses",
   profil: "Profil",
   educatif: "Éducatif",
-  annonce: "Annonce",
+  signature: "Signature",
 };
 
 export async function generateMetadata({
@@ -80,7 +78,16 @@ export default async function CreatorProfilePage({
   const auth = await getAuthState();
   const isOwner = auth.user?.email === c.email;
 
-  const [eventsRes, articlesRes] = await Promise.all([
+  const [postsRes, eventsRes, articlesRes] = await Promise.all([
+    supabase
+      .from("creator_posts")
+      .select(
+        "id, slug, type, title, content_html, cover_image, gallery_images, service_url, service_price, service_cta, tags, published_at, view_count",
+      )
+      .eq("status", "published")
+      .eq("creator_id", c.id)
+      .order("published_at", { ascending: false })
+      .limit(12),
     supabase
       .from("events")
       .select(
@@ -93,7 +100,7 @@ export default async function CreatorProfilePage({
     supabase
       .from("editorial_articles")
       .select(
-        "id, slug, title, cover_image, type, reading_time, published_at",
+        "id, slug, title, cover_image, type, reading_time, published_at, excerpt",
       )
       .eq("status", "published")
       .eq("linked_creator", c.id)
@@ -101,12 +108,21 @@ export default async function CreatorProfilePage({
       .limit(6),
   ]);
 
+  const ownPosts = (postsRes.data ?? []).map((p) => ({
+    ...p,
+    creator: {
+      handle: c.handle,
+      display_name: c.display_name,
+      city: c.city,
+      profile_image: c.profile_image,
+    },
+  }));
   const events = eventsRes.data ?? [];
   const articles = articlesRes.data ?? [];
 
   const initials = c.display_name
     .split(" ")
-    .map((p) => p[0])
+    .map((p: string) => p[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
@@ -114,17 +130,17 @@ export default async function CreatorProfilePage({
   return (
     <article>
       {isOwner && (
-        <div className="bg-creme-fonce border-b-[2.5px] border-noir">
-          <div className="max-w-[1320px] mx-auto px-6 lg:px-14 py-3 flex items-center justify-between gap-4">
-            <p className="font-body text-sm">
-              <strong>Tu vois ta page publique.</strong>{" "}
+        <div className="bg-accent-soft border-b border-accent">
+          <div className="max-w-[1320px] mx-auto px-6 lg:px-14 py-2.5 flex items-center justify-between gap-4">
+            <p className="small text-noir">
+              <strong className="font-medium">Tu vois ta page publique.</strong>{" "}
               <span className="text-noir-doux">
                 C&apos;est ce que voient les visiteurs de l&apos;annuaire.
               </span>
             </p>
             <Link
               href="/compte"
-              className="font-body text-sm uppercase tracking-wider underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep shrink-0"
+              className="mono-meta text-accent-deep hover:text-accent transition-colors shrink-0"
             >
               Modifier mon profil →
             </Link>
@@ -132,26 +148,22 @@ export default async function CreatorProfilePage({
         </div>
       )}
 
-      {/* Cover */}
-      <section className="relative">
-        {c.cover_image ? (
-          <div className="aspect-[21/9] max-h-[420px] overflow-hidden border-b-[2.5px] border-noir">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={c.cover_image}
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ) : (
-          <div className="aspect-[21/9] max-h-[280px] bg-creme-fonce border-b-[2.5px] border-noir grain-bg overflow-hidden" />
-        )}
-      </section>
+      {c.cover_image ? (
+        <div className="aspect-[21/9] max-h-[420px] overflow-hidden border-b border-noir">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={c.cover_image}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="aspect-[21/9] max-h-[260px] bg-creme-fonce border-b border-noir" />
+      )}
 
-      {/* Identity */}
-      <section className="px-6 lg:px-14 max-w-[1320px] mx-auto w-full -mt-16 lg:-mt-24 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-end">
-          <div className="aspect-square w-40 lg:w-[200px] border-[2.5px] border-noir shadow-[6px_6px_0_var(--color-noir)] bg-creme-fonce overflow-hidden flex items-center justify-center">
+      <section className="px-6 lg:px-14 max-w-[1320px] mx-auto w-full -mt-14 lg:-mt-20 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-6 items-end">
+          <div className="aspect-square w-32 lg:w-[180px] border border-noir rounded-lg bg-creme-clair overflow-hidden flex items-center justify-center shadow-[0_4px_20px_-4px_rgba(16,6,9,0.15)]">
             {c.profile_image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -160,19 +172,15 @@ export default async function CreatorProfilePage({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="font-display text-7xl text-noir/40 leading-none">
-                {initials}
-              </span>
+              <span className="display-1 text-noir/30">{initials}</span>
             )}
           </div>
-          <div className="space-y-3 lg:pb-6">
+          <div className="space-y-3 lg:pb-4">
             <p className="mono-meta text-noir-doux">@{c.handle}</p>
-            <h1 className="font-display text-[clamp(48px,7vw,120px)] leading-[0.88] m-0 tracking-tight">
-              {c.display_name}
-            </h1>
+            <h1 className="display-1">{c.display_name}</h1>
             <div className="flex flex-wrap items-center gap-3">
               {c.city && (
-                <span className="font-body text-base">
+                <span className="body">
                   {c.city}
                   {c.canton ? ` · ${c.canton}` : ""}
                 </span>
@@ -180,7 +188,9 @@ export default async function CreatorProfilePage({
               {c.categories.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {c.categories.map((cat) => (
-                    <Tag key={cat}>{cat}</Tag>
+                    <Tag key={cat} variant="soft">
+                      {cat}
+                    </Tag>
                   ))}
                 </div>
               )}
@@ -189,17 +199,16 @@ export default async function CreatorProfilePage({
         </div>
       </section>
 
-      {/* Bio */}
       {(c.long_bio || c.short_bio) && (
-        <section className="px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
+        <section className="px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
             <p className="eyebrow text-noir-doux">Bio</p>
             <div className="max-w-[720px] space-y-4">
               {(c.long_bio ?? c.short_bio ?? "")
                 .split("\n")
                 .filter(Boolean)
                 .map((para, i) => (
-                  <p key={i} className="font-body text-[18px] leading-relaxed">
+                  <p key={i} className="lead">
                     {para}
                   </p>
                 ))}
@@ -208,10 +217,9 @@ export default async function CreatorProfilePage({
         </section>
       )}
 
-      {/* Links */}
       {c.links && c.links.length > 0 && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
+        <section className="border-t border-noir px-6 lg:px-14 py-10 max-w-[1320px] mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
             <p className="eyebrow text-noir-doux">Liens</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl">
               {c.links.map((link, i) => (
@@ -220,9 +228,9 @@ export default async function CreatorProfilePage({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-2 border-noir bg-creme px-4 py-3 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-noir)] transition-all flex items-center justify-between gap-3"
+                  className="border border-noir bg-creme-clair px-4 py-3 rounded-md hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_24px_-8px_rgba(16,6,9,0.12)] transition-all duration-150 flex items-center justify-between gap-3"
                 >
-                  <span className="font-body text-base">{link.label}</span>
+                  <span className="body">{link.label}</span>
                   <span className="mono-meta text-noir-doux">↗</span>
                 </a>
               ))}
@@ -231,16 +239,27 @@ export default async function CreatorProfilePage({
         </section>
       )}
 
-      {/* Events */}
-      {events.length > 0 && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-          <div className="mb-7">
-            <p className="eyebrow text-noir-doux">Agenda</p>
-            <h2 className="font-display text-4xl sm:text-5xl mt-1.5 leading-[0.92]">
-              Events à venir
-            </h2>
+      {ownPosts.length > 0 && (
+        <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="mono-meta text-noir-doux">Feed perso</span>
+            <h2 className="heading-1">Publications</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {ownPosts.map((p) => (
+              <CreatorPostCard key={p.id} post={p as Parameters<typeof CreatorPostCard>[0]["post"]} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {events.length > 0 && (
+        <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="mono-meta text-noir-doux">Agenda</span>
+            <h2 className="heading-1">Events à venir</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((e) => (
               <EventCard
                 key={e.id}
@@ -250,23 +269,20 @@ export default async function CreatorProfilePage({
                 category={e.categories[0] ?? "Event"}
                 date={formatEventDate(e.date_start)}
                 meta={`${e.city} · ${e.venue}`}
-                price={e.price_info ?? "À voir"}
+                price={e.price_info ?? undefined}
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* Articles */}
       {articles.length > 0 && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-          <div className="mb-7">
-            <p className="eyebrow text-noir-doux">Vu dans CREON</p>
-            <h2 className="font-display text-4xl sm:text-5xl mt-1.5 leading-[0.92]">
-              Articles
-            </h2>
+        <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="mono-meta text-noir-doux">Vu dans CREON</span>
+            <h2 className="heading-1">Articles</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {articles.map((a) => (
               <ArticleCard
                 key={a.id}
@@ -276,6 +292,7 @@ export default async function CreatorProfilePage({
                 type={typeLabels[a.type as string]}
                 reading_time={a.reading_time ?? 0}
                 date={a.published_at ? formatArticleDate(a.published_at) : ""}
+                excerpt={a.excerpt}
               />
             ))}
           </div>

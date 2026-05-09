@@ -87,19 +87,18 @@ export default async function EventDetailPage({
 
   return (
     <article>
-      {/* Hero with cover */}
-      <section className="px-6 lg:px-14 pt-8 pb-10 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">
+      <section className="px-6 lg:px-14 pt-10 pb-10 max-w-[1320px] mx-auto w-full">
+        <p className="mono-meta text-noir-doux mb-5">
           <Link
             href="/events"
-            className="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
+            className="hover:text-accent-deep transition-colors"
           >
             ← Tous les events
           </Link>
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-10">
-          <div className="aspect-[4/3] overflow-hidden border-[2.5px] border-noir shadow-[6px_6px_0_var(--color-noir)]">
+          <div className="aspect-[4/3] overflow-hidden border border-noir rounded-lg bg-creme-fonce">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={evt.cover_image ?? "/assets/riso-event-1.svg"}
@@ -110,42 +109,36 @@ export default async function EventDetailPage({
 
           <div className="flex flex-col gap-5">
             {evt.categories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {evt.categories.map((c) => (
-                  <Tag key={c} variant="accent">
+                  <Tag key={c} variant="soft">
                     {c}
                   </Tag>
                 ))}
               </div>
             )}
-            <h1 className="font-display text-[clamp(40px,5.5vw,80px)] leading-[0.92] m-0 tracking-tight">
-              {evt.title}
-            </h1>
+            <h1 className="display-2">{evt.title}</h1>
 
             <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 mt-2">
-              <dt className="eyebrow text-noir-doux">Date</dt>
-              <dd className="font-body">
-                {formatEventDateLong(evt.date_start)} · {formatEventTime(evt.date_start)}
-                {evt.date_end && (
-                  <>
-                    {" "}
-                    → {formatEventTime(evt.date_end)}
-                  </>
-                )}
+              <dt className="eyebrow text-noir-doux pt-0.5">Date</dt>
+              <dd className="body">
+                {formatEventDateLong(evt.date_start)} ·{" "}
+                {formatEventTime(evt.date_start)}
+                {evt.date_end && <> → {formatEventTime(evt.date_end)}</>}
               </dd>
-              <dt className="eyebrow text-noir-doux">Lieu</dt>
-              <dd className="font-body">
-                <strong>{evt.venue}</strong>
+              <dt className="eyebrow text-noir-doux pt-0.5">Lieu</dt>
+              <dd className="body">
+                <strong className="font-medium">{evt.venue}</strong>
                 <br />
-                <span className="text-noir-doux">
+                <span className="small text-noir-doux">
                   {evt.city}
                   {evt.venue_address ? ` · ${evt.venue_address}` : ""}
                 </span>
               </dd>
               {evt.price_info && (
                 <>
-                  <dt className="eyebrow text-noir-doux">Prix</dt>
-                  <dd className="font-body">{evt.price_info}</dd>
+                  <dt className="eyebrow text-noir-doux pt-0.5">Prix</dt>
+                  <dd className="body">{evt.price_info}</dd>
                 </>
               )}
             </dl>
@@ -155,7 +148,7 @@ export default async function EventDetailPage({
                 href={evt.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${buttonVariants({ variant: "primary", size: "lg" })} mt-3 w-fit`}
+                className={`${buttonVariants({ variant: "accent", size: "lg" })} mt-3 w-fit`}
               >
                 {evt.external_label ?? "S'inscrire"} ↗
               </a>
@@ -165,61 +158,55 @@ export default async function EventDetailPage({
       </section>
 
       {evt.short_description && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
-            <p className="eyebrow text-noir-doux">Description</p>
+        <section className="border-t border-noir px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
+            <p className="eyebrow text-noir-doux">À propos</p>
             <div className="max-w-[720px]">
-              <p className="font-body text-[18px] leading-relaxed">
-                {evt.short_description}
-              </p>
+              <p className="lead">{evt.short_description}</p>
             </div>
           </div>
         </section>
       )}
 
       {evt.creator && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-8 lg:gap-12">
+        <section className="border-t border-noir px-6 lg:px-14 py-12 max-w-[1320px] mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12">
             <p className="eyebrow text-noir-doux">Avec</p>
-            <div>
-              <Link
-                href={`/createurs/${evt.creator.handle}`}
-                className="inline-flex items-center gap-4 border-2 border-noir bg-creme px-5 py-4 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-noir)] transition-all"
-              >
-                <div className="w-14 h-14 bg-creme-fonce border-2 border-noir flex items-center justify-center font-display text-xl text-noir/40">
-                  {evt.creator.display_name
-                    .split(" ")
-                    .map((p) => p[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </div>
-                <div>
-                  <p className="font-display text-2xl leading-none">
-                    {evt.creator.display_name}
+            <Link
+              href={`/createurs/${evt.creator.handle}`}
+              className="inline-flex items-center gap-4 border border-noir bg-creme-clair px-5 py-4 rounded-lg hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_24px_-8px_rgba(16,6,9,0.12)] transition-all duration-150 w-fit"
+            >
+              <div className="w-12 h-12 rounded-full bg-creme-fonce border border-noir flex items-center justify-center mono-meta text-noir-doux">
+                {evt.creator.display_name
+                  .split(" ")
+                  .map((p: string) => p[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </div>
+              <div>
+                <p className="heading-3 leading-tight">
+                  {evt.creator.display_name}
+                </p>
+                {evt.creator.city && (
+                  <p className="mono-meta text-noir-doux mt-1">
+                    {evt.creator.city}
                   </p>
-                  {evt.creator.city && (
-                    <p className="mono-meta text-noir-doux mt-1">
-                      {evt.creator.city}
-                    </p>
-                  )}
-                </div>
-                <span className="ml-3 mono-meta">→</span>
-              </Link>
-            </div>
+                )}
+              </div>
+              <span className="ml-3 mono-meta text-noir-doux">→</span>
+            </Link>
           </div>
         </section>
       )}
 
       {similar && similar.length > 0 && (
-        <section className="border-t-[2.5px] border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
-          <div className="mb-7">
-            <p className="eyebrow text-noir-doux">À voir aussi</p>
-            <h2 className="font-display text-4xl sm:text-5xl mt-1.5 leading-[0.92]">
-              Events similaires
-            </h2>
+        <section className="border-t border-noir px-6 lg:px-14 py-12 lg:py-16 max-w-[1320px] mx-auto w-full">
+          <div className="flex items-baseline gap-3 mb-6">
+            <span className="mono-meta text-noir-doux">→</span>
+            <h2 className="heading-1">À voir aussi</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {similar.map((e) => (
               <EventCard
                 key={e.id}
@@ -229,7 +216,7 @@ export default async function EventDetailPage({
                 category={e.categories[0] ?? "Event"}
                 date={formatEventDate(e.date_start)}
                 meta={`${e.city} · ${e.venue}`}
-                price={e.price_info ?? "À voir"}
+                price={e.price_info ?? undefined}
               />
             ))}
           </div>
