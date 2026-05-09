@@ -32,6 +32,7 @@ export function Header({
   const isAuthenticated = creator !== null || isAdmin;
 
   function isActive(href: string): boolean {
+    if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(href + "/");
   }
 
@@ -43,20 +44,20 @@ export function Header({
         </div>
       )}
 
-      <header className="border-b border-noir bg-creme">
-        <div className="max-w-[1320px] mx-auto px-6 lg:px-14 h-16 flex items-center justify-between gap-6">
+      <header className="sticky top-0 z-40 backdrop-blur-md bg-creme/80 [box-shadow:0_1px_0_rgba(16,6,9,0.06),0_8px_24px_-16px_rgba(16,6,9,0.12)]">
+        <div className="max-w-[1320px] mx-auto px-4 lg:px-8 h-[72px] flex items-center justify-between gap-4">
           <Link href="/" className="shrink-0 block leading-none">
             <Image
               src="/assets/creon-logo.png"
               alt="CREON"
-              width={200}
-              height={76}
+              width={220}
+              height={84}
               priority
-              className="w-[88px] sm:w-[96px] h-auto"
+              className="w-[96px] sm:w-[108px] h-auto"
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5 bg-creme-clair/70 backdrop-blur border border-noir/15 rounded-full px-1.5 py-1.5">
             {navLinks.map((link) => {
               const active = isActive(link.href);
               return (
@@ -64,10 +65,10 @@ export function Header({
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "px-3 py-1.5 rounded-md font-body text-[14px] font-medium transition-colors duration-150",
+                    "px-3.5 py-1.5 rounded-full font-body text-[14px] font-medium transition-all duration-200",
                     active
-                      ? "bg-accent-soft text-accent-deep"
-                      : "text-noir hover:bg-creme-fonce",
+                      ? "bg-noir text-creme shadow-[0_2px_8px_-2px_rgba(16,6,9,0.3)]"
+                      : "text-noir-doux hover:text-noir hover:bg-creme-fonce/60",
                   )}
                 >
                   {link.label}
@@ -81,7 +82,7 @@ export function Header({
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex px-3 py-1.5 font-body text-[13px] text-noir hover:text-accent-deep transition-colors"
+                  className="hidden sm:inline-flex px-3 py-1.5 font-body text-[13px] text-noir-doux hover:text-noir transition-colors"
                 >
                   Connexion
                 </Link>
@@ -109,7 +110,10 @@ export function Header({
                   "gap-1.5",
                 )}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-hidden />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-accent"
+                  aria-hidden
+                />
                 Admin
               </Link>
             )}

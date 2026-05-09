@@ -4,7 +4,7 @@ import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
-import { HeroAnimated } from "@/components/HeroAnimated";
+import { HeroCinematic } from "@/components/HeroCinematic";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate, formatArticleDate } from "@/lib/format";
 
@@ -229,20 +229,16 @@ export default async function Home() {
 
   return (
     <>
-      <div className="relative">
-        <HeroAnimated
-          eyebrow="CREON · 2026"
-          title={heroTitle}
-          subtitle={heroSubtitle}
-          ctaPrimary={{ label: "Explorer le feed", href: "/feed" }}
-          ctaSecondary={{
-            label: "Devenir créateur",
-            href: "/proposer-mon-profil",
-          }}
-        />
-      </div>
-
-      <hr className="border-0 border-t border-noir m-0" />
+      <HeroCinematic
+        eyebrow="CREON · La plateforme suisse pour les créateurs"
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        ctaPrimary={{ label: "Explorer le feed", href: "/feed" }}
+        ctaSecondary={{
+          label: "Devenir créateur",
+          href: "/proposer-mon-profil",
+        }}
+      />
 
       {/* 01 — EVENTS */}
       {events.length > 0 && (

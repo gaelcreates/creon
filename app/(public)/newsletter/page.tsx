@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/Card";
+import { SectionDecor } from "@/components/SectionDecor";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata = {
@@ -65,7 +66,8 @@ export default async function NewsletterPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="envelope" />
         <p className="eyebrow text-noir-doux mb-5">
           Newsletter dominicale · ~600 mots
         </p>

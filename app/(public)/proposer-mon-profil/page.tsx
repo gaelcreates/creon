@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CategoryPicker } from "@/components/CategoryPicker";
+import { SectionDecor } from "@/components/SectionDecor";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugify, randomSuffix } from "@/lib/slug";
 
@@ -118,7 +119,8 @@ export default async function ProposerMonProfilPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="form" />
         <p className="eyebrow text-noir-doux mb-5">
           Candidature · sur invitation uniquement
         </p>

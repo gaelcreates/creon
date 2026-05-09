@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleCard } from "@/components/ArticleCard";
 import { Tag } from "@/components/ui/Tag";
+import { SectionDecor } from "@/components/SectionDecor";
 import { formatArticleDate, buildQuery } from "@/lib/format";
 
 const TYPES: Array<{ value: string; label: string }> = [
@@ -63,7 +64,8 @@ export default async function ArticlesPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="documents" />
         <p className="eyebrow text-noir-doux mb-5">
           Lecture longue · CREON crew
         </p>

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { SectionDecor } from "@/components/SectionDecor";
 
 export const metadata = {
   title: "À propos — CREON",
@@ -31,7 +32,8 @@ function Section({
 export default function AProposPage() {
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="manifesto" />
         <p className="eyebrow text-noir-doux mb-5">À propos · 2026</p>
         <h1 className="display-1 max-w-4xl">
           On fait une <span className="hl">plateforme</span>.<br />

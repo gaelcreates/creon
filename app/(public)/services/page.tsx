@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
+import { SectionDecor } from "@/components/SectionDecor";
 import { cn } from "@/lib/cn";
 import { buildQuery } from "@/lib/format";
 
@@ -68,7 +69,8 @@ export default async function ServicesPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="shop" />
         <p className="eyebrow text-noir-doux mb-5">
           Vitrine cross-créateurs
         </p>

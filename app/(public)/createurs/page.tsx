@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorCard } from "@/components/CreatorCard";
+import { SectionDecor } from "@/components/SectionDecor";
 import { buildQuery } from "@/lib/format";
 
 const CITIES = [
@@ -72,7 +73,8 @@ export default async function CreatorsPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+        <SectionDecor variant="portraits" />
         <p className="eyebrow text-noir-doux mb-5">
           Annuaire · sur invitation
         </p>
