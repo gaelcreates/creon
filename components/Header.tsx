@@ -14,11 +14,12 @@ type HeaderProps = {
 };
 
 const navLinks = [
-  { href: "/events", label: "Events" },
+  { href: "/feed", label: "Feed" },
   { href: "/createurs", label: "Créateurs" },
+  { href: "/events", label: "Events" },
   { href: "/articles", label: "Articles" },
-  { href: "/newsletter", label: "Newsletter" },
-  { href: "/a-propos", label: "À propos" },
+  { href: "/services", label: "Services" },
+  { href: "/productions", label: "Productions" },
 ];
 
 export function Header({
@@ -35,37 +36,26 @@ export function Header({
 
   return (
     <>
-      {/* Editorial top bar */}
-      <div className="bg-noir text-creme px-6 lg:px-14 py-2 flex justify-between items-center text-[11px] tracking-[0.16em] uppercase font-light">
-        {bannerText ? (
-          <span className="truncate">{bannerText}</span>
-        ) : (
-          <>
-            <span>N° 1 · Édition de lancement</span>
-            <span className="hidden sm:flex gap-5">
-              <span>Lausanne 14°</span>
-              <span>Genève 16°</span>
-              <span className="text-accent">+ events ce week-end</span>
-            </span>
-          </>
-        )}
-      </div>
+      {bannerText && (
+        <div className="bg-noir text-creme px-6 lg:px-14 py-1.5 text-center text-[12px] tracking-tight">
+          {bannerText}
+        </div>
+      )}
 
-      {/* Main header */}
-      <header className="border-b-[2.5px] border-noir bg-creme">
-        <div className="max-w-[1320px] mx-auto px-6 lg:px-14 py-5 flex items-center justify-between gap-6">
+      <header className="border-b border-noir bg-creme">
+        <div className="max-w-[1320px] mx-auto px-6 lg:px-14 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="shrink-0 block leading-none">
             <Image
               src="/assets/creon-logo.png"
               alt="CREON"
-              width={260}
-              height={100}
+              width={200}
+              height={76}
               priority
-              className="w-[110px] sm:w-[130px] h-auto"
+              className="w-[88px] sm:w-[96px] h-auto"
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 lg:gap-8">
+          <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const active = isActive(link.href);
               return (
@@ -73,9 +63,10 @@ export function Header({
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "font-body text-[13px] tracking-[0.14em] uppercase transition-colors hover:text-accent-deep",
-                    active &&
-                      "underline decoration-accent decoration-[3px] underline-offset-[6px]",
+                    "px-3 py-1.5 rounded-md font-body text-[14px] font-medium transition-colors duration-150",
+                    active
+                      ? "bg-accent-soft text-accent-deep"
+                      : "text-noir hover:bg-creme-fonce",
                   )}
                 >
                   {link.label}
@@ -84,12 +75,12 @@ export function Header({
             })}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {!isAuthenticated && (
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-block font-body text-[12px] tracking-[0.14em] uppercase underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep px-2 py-1"
+                  className="hidden sm:inline-flex px-3 py-1.5 font-body text-[13px] text-noir hover:text-accent-deep transition-colors"
                 >
                   Connexion
                 </Link>
@@ -97,7 +88,7 @@ export function Header({
                   href="/newsletter"
                   className={buttonVariants({ variant: "primary", size: "sm" })}
                 >
-                  S&apos;abonner →
+                  S&apos;abonner
                 </Link>
               </>
             )}
@@ -112,9 +103,13 @@ export function Header({
             {isAdmin && (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-1.5 font-body text-xs uppercase tracking-wider px-3 py-1.5 border-2 border-noir bg-noir text-creme shadow-[3px_3px_0_var(--color-noir)] hover:shadow-[5px_5px_0_var(--color-noir)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:shadow-none active:translate-x-0 active:translate-y-0 transition-all"
+                className={cn(
+                  buttonVariants({ variant: "secondary", size: "sm" }),
+                  "gap-1.5",
+                )}
               >
-                <span className="text-accent">●</span> Admin
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-hidden />
+                Admin
               </Link>
             )}
           </div>

@@ -18,11 +18,12 @@ export function Chip({
     <button
       type="button"
       className={cn(
-        "inline-flex items-center px-4 py-1.5 border-2 border-noir font-body text-sm uppercase tracking-wider cursor-pointer",
-        "transition-colors duration-100",
+        "inline-flex items-center px-3.5 py-1.5 rounded-md border " +
+          "font-body text-[13px] font-medium cursor-pointer " +
+          "transition-all duration-150 ease-out",
         active
-          ? "bg-accent text-noir"
-          : "bg-creme text-noir hover:bg-creme-fonce",
+          ? "bg-accent text-noir border-accent shadow-[0_1px_3px_rgba(233,106,0,0.2)]"
+          : "bg-creme-clair text-noir border-noir hover:bg-creme-fonce",
         className,
       )}
       {...props}

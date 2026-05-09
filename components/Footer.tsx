@@ -5,12 +5,14 @@ type FooterCol = { title: string; links: FooterLink[] };
 
 const cols: FooterCol[] = [
   {
-    title: "Le mag",
+    title: "Plateforme",
     links: [
-      { href: "/events", label: "Events" },
+      { href: "/feed", label: "Feed" },
       { href: "/createurs", label: "Créateurs" },
+      { href: "/events", label: "Events" },
       { href: "/articles", label: "Articles" },
-      { href: "/newsletter", label: "Newsletter" },
+      { href: "/services", label: "Services" },
+      { href: "/productions", label: "Productions" },
     ],
   },
   {
@@ -31,6 +33,7 @@ const cols: FooterCol[] = [
     links: [
       { href: "/a-propos", label: "À propos" },
       { href: "/proposer-mon-profil", label: "Proposer ton profil" },
+      { href: "/newsletter", label: "Newsletter" },
       { href: "/mentions-legales", label: "Mentions" },
       { href: "/confidentialite", label: "Confidentialité" },
     ],
@@ -39,27 +42,25 @@ const cols: FooterCol[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-noir text-creme grain-bg grain-on-dark mt-auto">
-      <div className="relative z-[2] max-w-[1320px] mx-auto px-6 lg:px-14 py-12 lg:py-14">
-        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
+    <footer className="border-t border-noir bg-creme mt-auto">
+      <div className="max-w-[1320px] mx-auto px-6 lg:px-14 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-[1.6fr_1fr_1fr_1fr] gap-10">
           <div>
-            <div className="bg-accent inline-block px-3.5 py-1.5">
-              <span className="font-display text-3xl text-noir leading-none">
-                CREON
-              </span>
+            <div className="font-display font-semibold text-2xl tracking-tight leading-none mb-4">
+              CREON
             </div>
-            <p className="mt-5 max-w-xs text-[15px] leading-snug text-creme">
-              Le média de la scène créative suisse romande. Indépendant,
-              imparfait, à l&apos;encre orange.
+            <p className="text-[14px] leading-relaxed text-noir-doux max-w-xs">
+              La plateforme suisse pour les créateurs. Annuaire, feed et events
+              de la scène créative romande.
             </p>
-            <p className="eyebrow mt-5 text-paper-edge">
+            <p className="mono-meta text-noir-doux mt-5">
               Made in Switzerland · 2026
             </p>
           </div>
 
           {cols.map((col) => (
             <div key={col.title}>
-              <p className="eyebrow text-accent mb-3.5">{col.title}</p>
+              <p className="eyebrow text-noir-doux mb-3">{col.title}</p>
               <ul className="list-none p-0 m-0 flex flex-col gap-2">
                 {col.links.map((link) =>
                   link.external ? (
@@ -68,7 +69,7 @@ export function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[15px] hover:text-accent transition-colors"
+                        className="text-[14px] text-noir hover:text-accent-deep transition-colors"
                       >
                         {link.label}
                       </a>
@@ -77,7 +78,7 @@ export function Footer() {
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-[15px] hover:text-accent transition-colors"
+                        className="text-[14px] text-noir hover:text-accent-deep transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -89,10 +90,9 @@ export function Footer() {
           ))}
         </div>
 
-        <hr className="border-0 border-t-[1.5px] border-paper-edge mt-9" />
-        <div className="mono-meta mt-3.5 flex flex-col sm:flex-row justify-between gap-2 text-paper-edge">
+        <div className="border-t border-noir/15 mt-12 pt-5 flex flex-col sm:flex-row justify-between gap-2 mono-meta text-noir-doux">
           <span>© CREON 2026 — Tous droits réservés.</span>
-          <span>Lausanne / Genève</span>
+          <span>Lausanne · Genève</span>
         </div>
       </div>
     </footer>
