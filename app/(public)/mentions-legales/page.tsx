@@ -22,7 +22,7 @@ function Block({
 export default function MentionsLegalesPage() {
   return (
     <article>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-3xl mx-auto w-full">
+      <section className="px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-3xl mx-auto w-full">
         <p className="eyebrow text-noir-doux mb-5">Légal</p>
         <h1 className="display-1">
           Mentions <span className="hl">légales</span>.

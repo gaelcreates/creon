@@ -86,7 +86,7 @@ export default async function ProductionsPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full">
+      <section className="px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full">
         <p className="eyebrow text-noir-doux mb-5">
           Service interne · CREON crew
         </p>

@@ -86,7 +86,7 @@ export default async function FeedPage({
 
   return (
     <>
-      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+      <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full overflow-hidden">
         <SectionDecor variant="feed" />
         <p className="eyebrow text-noir-doux mb-5">
           Plateforme · contenus créateurs

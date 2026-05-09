@@ -2,26 +2,18 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/Button";
 import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
-import { ArticleCard } from "@/components/ArticleCard";
-import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
+import { Card } from "@/components/ui/Card";
+import { Tag } from "@/components/ui/Tag";
 import { HeroCinematic } from "@/components/HeroCinematic";
 import { createClient } from "@/lib/supabase/server";
-import { formatEventDate, formatArticleDate } from "@/lib/format";
+import { formatEventDate } from "@/lib/format";
 
 const PORTRAIT_FALLBACKS = [
   "/assets/riso-portrait-1.svg",
   "/assets/riso-portrait-2.svg",
   "/assets/riso-portrait-3.svg",
 ];
-const ARTICLE_FALLBACK = "/assets/riso-article-1.svg";
 const EVENT_FALLBACK = "/assets/riso-event-1.svg";
-
-const TYPE_LABELS: Record<string, string> = {
-  coulisses: "Coulisses",
-  profil: "Profil",
-  educatif: "Éducatif",
-  signature: "Signature",
-};
 
 type EventRow = {
   id: string;
@@ -45,43 +37,16 @@ type CreatorRow = {
   profile_image: string | null;
 };
 
-type ArticleRow = {
+type ProductionRow = {
   id: string;
   slug: string;
-  title: string;
-  excerpt: string | null;
+  client_name: string;
+  project_title: string;
   cover_image: string | null;
-  type: string;
-  reading_time: number | null;
-  published_at: string | null;
-};
-
-type PostRow = {
-  id: string;
-  slug: string;
-  type: "short" | "article" | "service";
-  title: string | null;
-  content_html: string | null;
-  cover_image: string | null;
-  gallery_images: string[];
-  service_url: string | null;
-  service_price: string | null;
-  service_cta: string | null;
   tags: string[];
-  published_at: string | null;
-  view_count: number;
-  creator: {
-    handle: string;
-    display_name: string;
-    city: string | null;
-    profile_image: string | null;
-  };
 };
 
-function reorderByIds<T extends { id: string }>(
-  rows: T[],
-  ids: string[],
-): T[] {
+function reorderByIds<T extends { id: string }>(rows: T[], ids: string[]): T[] {
   if (ids.length === 0) return rows;
   return ids.map((id) => rows.find((r) => r.id === id)).filter(Boolean) as T[];
 }
@@ -100,20 +65,20 @@ function SectionHeader({
   ctaHref?: string;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-7">
+    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
       <div>
         <div className="flex items-baseline gap-2 mb-2">
           <span className="mono-meta text-noir-doux">{number}</span>
-          <h2 className="heading-1">{title}</h2>
+          <h2 className="display-2">{title}</h2>
         </div>
         {description && (
-          <p className="small text-noir-doux max-w-md">{description}</p>
+          <p className="lead text-noir-doux max-w-md">{description}</p>
         )}
       </div>
       {cta && ctaHref && (
         <Link
           href={ctaHref}
-          className={`shrink-0 ${buttonVariants({ variant: "secondary", size: "sm" })}`}
+          className={`shrink-0 ${buttonVariants({ variant: "primary", size: "md" })}`}
         >
           {cta}
         </Link>
@@ -134,10 +99,10 @@ export default async function Home() {
 
   const featuredEventIds = (config?.featured_event_ids ?? []) as string[];
   const featuredCreatorIds = (config?.featured_creator_ids ?? []) as string[];
-  const featuredArticleIds = (config?.featured_article_ids ?? []) as string[];
-  const featuredPostIds = (config?.featured_post_ids ?? []) as string[];
+  const featuredProductionIds = (config?.featured_production_ids ??
+    []) as string[];
 
-  const [eventsRes, creatorsRes, articlesRes, postsRes] = await Promise.all([
+  const [eventsRes, creatorsRes, productionsRes] = await Promise.all([
     featuredEventIds.length > 0
       ? supabase
           .from("events")
@@ -170,38 +135,18 @@ export default async function Home() {
           .eq("status", "active")
           .order("display_name", { ascending: true })
           .limit(4),
-    featuredArticleIds.length > 0
+    featuredProductionIds.length > 0
       ? supabase
-          .from("editorial_articles")
-          .select(
-            "id, slug, title, excerpt, cover_image, type, reading_time, published_at",
-          )
+          .from("productions_references")
+          .select("id, slug, client_name, project_title, cover_image, tags")
           .eq("status", "published")
-          .in("id", featuredArticleIds)
+          .in("id", featuredProductionIds)
       : supabase
-          .from("editorial_articles")
-          .select(
-            "id, slug, title, excerpt, cover_image, type, reading_time, published_at",
-          )
+          .from("productions_references")
+          .select("id, slug, client_name, project_title, cover_image, tags")
           .eq("status", "published")
-          .order("published_at", { ascending: false })
+          .order("order_index", { ascending: true })
           .limit(3),
-    featuredPostIds.length > 0
-      ? supabase
-          .from("creator_posts")
-          .select(
-            "id, slug, type, title, content_html, cover_image, gallery_images, service_url, service_price, service_cta, tags, published_at, view_count, creator:creators(handle, display_name, city, profile_image)",
-          )
-          .eq("status", "published")
-          .in("id", featuredPostIds)
-      : supabase
-          .from("creator_posts")
-          .select(
-            "id, slug, type, title, content_html, cover_image, gallery_images, service_url, service_price, service_cta, tags, published_at, view_count, creator:creators(handle, display_name, city, profile_image)",
-          )
-          .eq("status", "published")
-          .order("published_at", { ascending: false })
-          .limit(4),
   ]);
 
   const events = reorderByIds(
@@ -212,13 +157,9 @@ export default async function Home() {
     (creatorsRes.data ?? []) as CreatorRow[],
     featuredCreatorIds,
   );
-  const articles = reorderByIds(
-    (articlesRes.data ?? []) as ArticleRow[],
-    featuredArticleIds,
-  );
-  const posts = reorderByIds(
-    (postsRes.data ?? []) as unknown as PostRow[],
-    featuredPostIds,
+  const productions = reorderByIds(
+    (productionsRes.data ?? []) as ProductionRow[],
+    featuredProductionIds,
   );
 
   const heroTitle =
@@ -230,7 +171,7 @@ export default async function Home() {
   return (
     <>
       <HeroCinematic
-        eyebrow="CREON · La plateforme suisse pour les créateurs"
+        eyebrow="CREON · Plateforme créative suisse"
         title={heroTitle}
         subtitle={heroSubtitle}
         ctaPrimary={{ label: "Explorer le feed", href: "/feed" }}
@@ -240,18 +181,24 @@ export default async function Home() {
         }}
       />
 
-      {/* 01 — EVENTS */}
-      {events.length > 0 && (
-        <section className="px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <SectionHeader
-            number="01"
-            title="Cette semaine"
-            description="Vernissages, concerts, soirées, marchés. Sélection à pas rater."
-            cta="Tous les events →"
-            ctaHref="/events"
-          />
+      <section className="border-t border-noir px-6 lg:px-14 pt-28 pb-20 lg:pt-32 lg:pb-24 max-w-[1320px] mx-auto w-full">
+        <SectionHeader
+          number="01"
+          title="Events actuels"
+          description="Vernissages, concerts, soirées, marchés. Sélection à pas rater."
+          cta="Tous les events →"
+          ctaHref="/events"
+        />
+        {events.length === 0 ? (
+          <Card className="p-10 text-center border-dashed border-noir/30">
+            <p className="heading-3 mb-2">L&apos;agenda se remplit.</p>
+            <p className="small text-noir-doux">
+              Les premiers events arrivent. Reviens dans quelques jours.
+            </p>
+          </Card>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((e) => (
+            {events.slice(0, 3).map((e) => (
               <EventCard
                 key={e.id}
                 title={e.title}
@@ -264,53 +211,27 @@ export default async function Home() {
               />
             ))}
           </div>
-        </section>
-      )}
-
-      {/* 02 — FEED (creator posts) */}
-      <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
-        <SectionHeader
-          number="02"
-          title="Le feed"
-          description="Les derniers posts, articles et services publiés par les créateurs eux-mêmes."
-          cta="Tout le feed →"
-          ctaHref="/feed"
-        />
-        {posts.length === 0 ? (
-          <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
-            <p className="heading-3 mb-3">Le feed démarre.</p>
-            <p className="small text-noir-doux max-w-md mx-auto mb-5">
-              Les premiers créateurs sont en cours d&apos;invitation. Reviens
-              dans quelques jours, ou rejoins-les en proposant ton profil.
-            </p>
-            <Link
-              href="/proposer-mon-profil"
-              className={buttonVariants({ variant: "accent", size: "sm" })}
-            >
-              Proposer mon profil
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {posts.map((p) => (
-              <CreatorPostCard key={p.id} post={p} />
-            ))}
-          </div>
         )}
       </section>
 
-      {/* 03 — CRÉATEURS */}
-      {creators.length > 0 && (
-        <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <SectionHeader
-            number="03"
-            title="Nos créateurs"
-            description="Mode, musique, art visuel, photo, design, artisanat. Sélection humaine, sans algo."
-            cta="Tout l'annuaire →"
-            ctaHref="/createurs"
-          />
+      <section className="border-t border-noir px-6 lg:px-14 pt-28 pb-20 lg:pt-32 lg:pb-24 max-w-[1320px] mx-auto w-full">
+        <SectionHeader
+          number="02"
+          title="Créateurs du moment"
+          description="Mode, musique, art visuel, photo, design. Sélection humaine, sans algo."
+          cta="Tout l'annuaire →"
+          ctaHref="/createurs"
+        />
+        {creators.length === 0 ? (
+          <Card className="p-10 text-center border-dashed border-noir/30">
+            <p className="heading-3 mb-2">L&apos;annuaire arrive.</p>
+            <p className="small text-noir-doux">
+              Les premiers créateurs sont en cours d&apos;invitation.
+            </p>
+          </Card>
+        ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {creators.map((c, i) => (
+            {creators.slice(0, 4).map((c, i) => (
               <CreatorCard
                 key={c.id}
                 display_name={c.display_name}
@@ -326,81 +247,65 @@ export default async function Home() {
               />
             ))}
           </div>
-        </section>
-      )}
-
-      {/* 04 — ARTICLES ÉDITORIAUX */}
-      {articles.length > 0 && (
-        <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <SectionHeader
-            number="04"
-            title="À lire"
-            description="Les dossiers et profils signés par CREON crew."
-            cta="Tous les articles →"
-            ctaHref="/articles"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {articles.map((a) => (
-              <ArticleCard
-                key={a.id}
-                title={a.title}
-                slug={a.slug}
-                cover={a.cover_image ?? ARTICLE_FALLBACK}
-                type={TYPE_LABELS[a.type] ?? a.type}
-                reading_time={a.reading_time ?? 0}
-                date={a.published_at ? formatArticleDate(a.published_at) : ""}
-                excerpt={a.excerpt}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 05 — PRODUCTIONS (placeholder, vide pour l'instant) */}
-      <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
-        <SectionHeader
-          number="05"
-          title="Productions"
-          description="Le service de production vidéo CREON. Films institutionnels, captations, événementiel."
-          cta="Voir nos productions →"
-          ctaHref="/productions"
-        />
-        <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
-          <p className="heading-3 mb-3">Page productions en cours.</p>
-          <p className="small text-noir-doux max-w-md mx-auto">
-            Vitrine des références + formulaire de devis arrivent bientôt.
-          </p>
-        </div>
+        )}
       </section>
 
-      {/* 06 — NEWSLETTER CTA */}
-      <section className="border-t border-noir bg-creme-clair">
-        <div className="px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 items-center">
-            <div>
-              <p className="eyebrow text-noir-doux mb-3">Newsletter</p>
-              <h2 className="display-2 mb-4">
-                La <span className="hl">crème</span> du vendredi, direct dans
-                ta boîte.
-              </h2>
-              <p className="lead text-noir-doux max-w-xl">
-                Cinq events, un créateur du moment, un dossier à lire. Une
-                fois par semaine, jamais de spam.
-              </p>
-            </div>
-            <div className="flex flex-col items-start gap-4">
-              <Link
-                href="/newsletter"
-                className={buttonVariants({ variant: "accent", size: "lg" })}
+      <section className="border-t border-noir px-6 lg:px-14 pt-28 pb-20 lg:pt-32 lg:pb-24 max-w-[1320px] mx-auto w-full">
+        <SectionHeader
+          number="03"
+          title="Dernières productions"
+          description="Films institutionnels, captations, événementiel. Production maison CREON crew."
+          cta="Voir toutes nos productions →"
+          ctaHref="/productions"
+        />
+        {productions.length === 0 ? (
+          <Card className="p-10 text-center border-dashed border-noir/30">
+            <p className="heading-3 mb-2">
+              Vitrine productions en cours de remplissage.
+            </p>
+            <p className="small text-noir-doux mb-4">Tu as un projet vidéo ?</p>
+            <Link
+              href="/productions"
+              className={buttonVariants({ variant: "accent", size: "sm" })}
+            >
+              Demander un devis →
+            </Link>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {productions.slice(0, 3).map((pr) => (
+              <Card
+                key={pr.id}
+                hoverable
+                className="overflow-hidden flex flex-col"
               >
-                S&apos;abonner
-              </Link>
-              <p className="mono-meta text-noir-doux">
-                4 200+ abonnés · taux d&apos;ouverture 64 %
-              </p>
-            </div>
+                <div className="aspect-[16/10] bg-creme-fonce border-b border-noir overflow-hidden">
+                  {pr.cover_image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={pr.cover_image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="p-4 space-y-2 flex-1 flex flex-col">
+                  <p className="mono-meta text-noir-doux">{pr.client_name}</p>
+                  <h3 className="heading-3 leading-tight">
+                    {pr.project_title}
+                  </h3>
+                  {pr.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-auto pt-2 border-t border-noir/15">
+                      {pr.tags.slice(0, 3).map((t) => (
+                        <Tag key={t}>{t}</Tag>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            ))}
           </div>
-        </div>
+        )}
       </section>
     </>
   );

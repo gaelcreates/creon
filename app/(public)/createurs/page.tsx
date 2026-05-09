@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorCard } from "@/components/CreatorCard";
 import { SectionDecor } from "@/components/SectionDecor";
+import { CreatorsHeroSearch } from "@/components/CreatorsHeroSearch";
 import { buildQuery } from "@/lib/format";
 
 const CITIES = [
@@ -73,13 +74,15 @@ export default async function CreatorsPage({
 
   return (
     <>
-      <section className="relative px-6 lg:px-14 pt-16 pb-10 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+      <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full overflow-hidden">
         <SectionDecor variant="portraits" />
         <p className="eyebrow text-noir-doux mb-5">
           Annuaire · sur invitation
         </p>
-        <h1 className="display-1 max-w-4xl">Les créateurs.</h1>
-        <p className="lead text-noir-doux mt-6 max-w-2xl">
+
+        <CreatorsHeroSearch defaultValue={q ?? ""} />
+
+        <p className="lead text-noir-doux mt-8 max-w-2xl">
           Mode, musique, art visuel, photo, vidéo, design, artisanat. Une
           sélection humaine, sans algorithme. Tu te reconnais ?{" "}
           <Link
@@ -89,18 +92,6 @@ export default async function CreatorsPage({
             Propose ton profil →
           </Link>
         </p>
-
-        <form className="mt-8 max-w-md" action="/createurs" method="get">
-          {city && <input type="hidden" name="city" value={city} />}
-          {category && <input type="hidden" name="category" value={category} />}
-          <input
-            type="search"
-            name="q"
-            defaultValue={q ?? ""}
-            placeholder="Chercher un créateur, une discipline…"
-            className="w-full px-4 py-2.5 border border-noir bg-creme-clair rounded-md font-body text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 transition-all"
-          />
-        </form>
       </section>
 
       <hr className="border-0 border-t border-noir m-0" />

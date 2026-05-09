@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ScrollProgress } from "@/components/ScrollProgress";
 import { getAuthState } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,6 +32,7 @@ export default async function PublicLayout({
         isAdmin={auth.isAdmin}
         bannerText={bannerText}
       />
+      <ScrollProgress />
       <main className="flex-1 flex flex-col">{children}</main>
       <Footer />
     </>

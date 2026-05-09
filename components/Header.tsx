@@ -19,8 +19,8 @@ const navLinks = [
   { href: "/createurs", label: "Créateurs" },
   { href: "/events", label: "Events" },
   { href: "/articles", label: "Articles" },
-  { href: "/services", label: "Services" },
   { href: "/productions", label: "Productions" },
+  { href: "/newsletter", label: "Newsletter" },
 ];
 
 export function Header({

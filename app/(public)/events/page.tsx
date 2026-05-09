@@ -69,7 +69,7 @@ export default async function EventsPage({
 
   return (
     <>
-      <section className="relative px-6 lg:px-14 pt-16 pb-12 lg:pt-20 max-w-[1320px] mx-auto w-full overflow-hidden">
+      <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full overflow-hidden">
         <SectionDecor variant="calendar" />
         <p className="eyebrow text-noir-doux mb-5">Agenda · Suisse romande</p>
         <h1 className="display-1 max-w-4xl">Tous les events.</h1>
