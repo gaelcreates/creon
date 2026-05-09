@@ -20,23 +20,31 @@ type Props = {
 
 /**
  * Animated decorative SVG positioned absolutely in a hero section.
- * Subtle, slow-motion, accent orange color, low opacity.
+ * V1 risographe-inspired : color blocks + offset registration.
+ * Hidden on mobile (sm), large on desktop.
  */
 export function SectionDecor({ variant, className = "" }: Props) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 w-[180px] h-[180px] lg:w-[260px] lg:h-[260px] opacity-90 ${className}`}
+      className={`pointer-events-none absolute -right-12 lg:right-0 top-12 lg:top-1/2 lg:-translate-y-1/2 w-[280px] sm:w-[360px] lg:w-[480px] aspect-square hidden sm:block ${className}`}
     >
-      {variant === "calendar" && <CalendarDecor />}
-      {variant === "documents" && <DocumentsDecor />}
-      {variant === "portraits" && <PortraitsDecor />}
-      {variant === "shop" && <ShopDecor />}
-      {variant === "camera" && <CameraDecor />}
-      {variant === "feed" && <FeedDecor />}
-      {variant === "manifesto" && <ManifestoDecor />}
-      {variant === "envelope" && <EnvelopeDecor />}
-      {variant === "form" && <FormDecor />}
+      {/* Riso-style offset color block behind */}
+      <div
+        className="absolute inset-2 bg-accent/15 rounded-full blur-2xl"
+        style={{ transform: "translate(8px, 8px)" }}
+      />
+      <div className="relative w-full h-full">
+        {variant === "calendar" && <CalendarDecor />}
+        {variant === "documents" && <DocumentsDecor />}
+        {variant === "portraits" && <PortraitsDecor />}
+        {variant === "shop" && <ShopDecor />}
+        {variant === "camera" && <CameraDecor />}
+        {variant === "feed" && <FeedDecor />}
+        {variant === "manifesto" && <ManifestoDecor />}
+        {variant === "envelope" && <EnvelopeDecor />}
+        {variant === "form" && <FormDecor />}
+      </div>
     </div>
   );
 }
