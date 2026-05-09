@@ -22,7 +22,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+      <label className="block eyebrow text-noir-doux">
         {label}
       </label>
       {children}
@@ -43,7 +43,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4 border-t-2 border-noir pt-8 first:border-0 first:pt-0">
+    <section className="space-y-4 border-t border-noir pt-8 first:border-0 first:pt-0">
       <div>
         <p className="eyebrow text-noir-doux">{number}</p>
         <h2 className="font-display text-3xl leading-none mt-1">{title}</h2>
@@ -118,10 +118,10 @@ export default async function AdminHomepagePage() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+        <p className="eyebrow text-noir-doux">
           Back-office
         </p>
-        <h1 className="font-display text-5xl mt-2 leading-none">
+        <h1 className="display-2 mt-2">
           Édition de la home
         </h1>
         <p className="font-body text-sm text-noir-doux mt-3 max-w-xl">
@@ -237,7 +237,7 @@ export default async function AdminHomepagePage() {
           />
         </Section>
 
-        <div className="flex items-center gap-3 pt-6 border-t-2 border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2">
+        <div className="flex items-center gap-3 pt-6 border-t border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2">
           <Button type="submit" size="lg">
             Enregistrer la home →
           </Button>

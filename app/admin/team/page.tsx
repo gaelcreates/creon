@@ -48,17 +48,17 @@ export default async function AdminTeamPage() {
   return (
     <div className="space-y-10 max-w-5xl">
       <div>
-        <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+        <p className="eyebrow text-noir-doux">
           Back-office · super admin
         </p>
-        <h1 className="font-display text-5xl mt-2 leading-none">Équipe</h1>
+        <h1 className="display-2 mt-2">Équipe</h1>
       </div>
 
       <section className="space-y-4">
         <h2 className="font-display text-2xl leading-tight">Admins actuels</h2>
         <div className="border-2 border-noir overflow-hidden">
           <table className="w-full font-body text-sm">
-            <thead className="bg-creme-fonce border-b-2 border-noir">
+            <thead className="bg-creme-fonce border-b border-noir">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-xs uppercase tracking-widest">
                   Nom
@@ -137,13 +137,13 @@ export default async function AdminTeamPage() {
           className="border-2 border-noir bg-creme p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl"
         >
           <div className="space-y-1.5 sm:col-span-1">
-            <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+            <label className="block eyebrow text-noir-doux">
               Nom
             </label>
             <Input name="display_name" placeholder="Léa M." required />
           </div>
           <div className="space-y-1.5 sm:col-span-1">
-            <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+            <label className="block eyebrow text-noir-doux">
               Email
             </label>
             <Input
@@ -154,7 +154,7 @@ export default async function AdminTeamPage() {
             />
           </div>
           <div className="space-y-1.5 sm:col-span-1">
-            <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+            <label className="block eyebrow text-noir-doux">
               Rôle
             </label>
             <select

@@ -77,10 +77,10 @@ export default async function AdminArticlesPage({
     <div className="space-y-8 max-w-7xl">
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+          <p className="eyebrow text-noir-doux">
             Back-office
           </p>
-          <h1 className="font-display text-5xl mt-2 leading-none">Articles</h1>
+          <h1 className="display-2 mt-2">Articles</h1>
         </div>
         <Link
           href="/admin/articles/new"
@@ -90,7 +90,7 @@ export default async function AdminArticlesPage({
         </Link>
       </div>
 
-      <div className="flex gap-3 border-b-2 border-noir flex-wrap">
+      <div className="flex gap-3 border-b border-noir flex-wrap">
         <TabLink
           active={tab === "all"}
           href="/admin/articles"
@@ -130,7 +130,7 @@ export default async function AdminArticlesPage({
       ) : (
         <div className="border-2 border-noir overflow-hidden">
           <table className="w-full font-body text-sm">
-            <thead className="bg-creme-fonce border-b-2 border-noir">
+            <thead className="bg-creme-fonce border-b border-noir">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-xs uppercase tracking-widest w-16">
                   Cover

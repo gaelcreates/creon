@@ -50,7 +50,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+      <label className="block eyebrow text-noir-doux">
         {label}
       </label>
       {children}
@@ -69,7 +69,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4 border-t-2 border-noir pt-8 first:border-0 first:pt-0">
+    <section className="space-y-4 border-t border-noir pt-8 first:border-0 first:pt-0">
       <div>
         <p className="eyebrow text-noir-doux">{number}</p>
         <h2 className="font-display text-2xl leading-none mt-1">{title}</h2>
@@ -96,9 +96,9 @@ export function ArticleForm({
 
   return (
     <div className="space-y-10 max-w-4xl">
-      <div className="flex items-center justify-between gap-4 pb-4 border-b-2 border-noir">
+      <div className="flex items-center justify-between gap-4 pb-4 border-b border-noir">
         <div>
-          <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+          <p className="eyebrow text-noir-doux">
             <Link
               href="/admin/articles"
               className="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
@@ -106,7 +106,7 @@ export function ArticleForm({
               ← Tous les articles
             </Link>
           </p>
-          <h1 className="font-display text-4xl mt-2 leading-none">
+          <h1 className="heading-1 mt-2">
             {isEdit ? "Modifier l'article" : "Nouvel article"}
           </h1>
         </div>
@@ -288,7 +288,7 @@ export function ArticleForm({
           </div>
         </Section>
 
-        <div className="flex items-center gap-3 pt-6 border-t-2 border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2 z-10">
+        <div className="flex items-center gap-3 pt-6 border-t border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2 z-10">
           <Button type="submit" size="lg">
             {isEdit ? "Enregistrer" : "Créer l'article"} →
           </Button>
@@ -302,7 +302,7 @@ export function ArticleForm({
       </form>
 
       {isEdit && deleteAction && (
-        <div className="border-t-2 border-noir pt-8 mt-12">
+        <div className="border-t border-noir pt-8 mt-12">
           <p className="eyebrow text-noir-doux mb-3">Zone de danger</p>
           <form
             action={deleteAction}

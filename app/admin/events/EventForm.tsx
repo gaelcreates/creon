@@ -70,7 +70,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block font-body text-xs uppercase tracking-widest text-noir-doux">
+      <label className="block eyebrow text-noir-doux">
         {label}
       </label>
       {children}
@@ -114,9 +114,9 @@ export function EventForm({
 
   return (
     <div className="space-y-10 max-w-3xl">
-      <div className="flex items-center justify-between gap-4 pb-4 border-b-2 border-noir">
+      <div className="flex items-center justify-between gap-4 pb-4 border-b border-noir">
         <div>
-          <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+          <p className="eyebrow text-noir-doux">
             <Link
               href="/admin/events"
               className="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
@@ -124,7 +124,7 @@ export function EventForm({
               ← Tous les events
             </Link>
           </p>
-          <h1 className="font-display text-4xl mt-2 leading-none">
+          <h1 className="heading-1 mt-2">
             {isEdit ? "Modifier l'event" : "Nouvel event"}
           </h1>
         </div>
@@ -312,7 +312,7 @@ export function EventForm({
           </div>
         </Section>
 
-        <div className="flex items-center gap-3 pt-6 border-t-2 border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2">
+        <div className="flex items-center gap-3 pt-6 border-t border-noir sticky bottom-0 bg-creme py-4 -mx-2 px-2">
           <Button type="submit" size="lg">
             {isEdit ? "Enregistrer" : "Créer l'event"} →
           </Button>
@@ -326,7 +326,7 @@ export function EventForm({
       </form>
 
       {isEdit && deleteAction && (
-        <div className="border-t-2 border-noir pt-8 mt-12">
+        <div className="border-t border-noir pt-8 mt-12">
           <p className="eyebrow text-noir-doux mb-3">Zone de danger</p>
           <form
             action={deleteAction}

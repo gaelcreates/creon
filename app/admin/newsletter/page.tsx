@@ -43,10 +43,10 @@ export default async function AdminNewsletterPage() {
     <div className="space-y-8 max-w-6xl">
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+          <p className="eyebrow text-noir-doux">
             Back-office
           </p>
-          <h1 className="font-display text-5xl mt-2 leading-none">
+          <h1 className="display-2 mt-2">
             Newsletter
           </h1>
         </div>
@@ -75,7 +75,7 @@ export default async function AdminNewsletterPage() {
       ) : (
         <div className="border-2 border-noir overflow-hidden">
           <table className="w-full font-body text-sm">
-            <thead className="bg-creme-fonce border-b-2 border-noir">
+            <thead className="bg-creme-fonce border-b border-noir">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-xs uppercase tracking-widest">
                   Email
@@ -141,10 +141,10 @@ function Stat({
 }) {
   return (
     <div className="border-2 border-noir bg-creme p-5">
-      <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
+      <p className="eyebrow text-noir-doux">
         {label}
       </p>
-      <p className="font-display text-5xl mt-2 leading-none">{value}</p>
+      <p className="display-2 mt-2">{value}</p>
       {hint && <p className="mono-meta mt-1.5 text-noir-doux">{hint}</p>}
     </div>
   );
