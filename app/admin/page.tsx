@@ -6,40 +6,51 @@ import { cn } from "@/lib/cn";
 
 async function getStats() {
   const supabase = await createClient();
-  const [creators, pending, subscribers, events, articles] = await Promise.all([
-    supabase
-      .from("creators")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active"),
-    supabase
-      .from("creators")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending"),
-    supabase
-      .from("newsletter_subscribers")
-      .select("id", { count: "exact", head: true })
-      .is("unsubscribed_at", null),
-    supabase
-      .from("events")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "published"),
-    supabase
-      .from("editorial_articles")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "published"),
-  ]);
+  const [creators, pending, subscribers, events, articles, posts, flags] =
+    await Promise.all([
+      supabase
+        .from("creators")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active"),
+      supabase
+        .from("creators")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+      supabase
+        .from("newsletter_subscribers")
+        .select("id", { count: "exact", head: true })
+        .is("unsubscribed_at", null),
+      supabase
+        .from("events")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published"),
+      supabase
+        .from("editorial_articles")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published"),
+      supabase
+        .from("creator_posts")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published"),
+      supabase
+        .from("post_flags")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+    ]);
   return {
     creators: creators.count ?? 0,
     pending: pending.count ?? 0,
     subscribers: subscribers.count ?? 0,
     events: events.count ?? 0,
     articles: articles.count ?? 0,
+    posts: posts.count ?? 0,
+    flags: flags.count ?? 0,
   };
 }
 
 async function getRecent() {
   const supabase = await createClient();
-  const [pendingCreators, recentEvents, recentArticles, recentSubs] =
+  const [pendingCreators, recentPosts, recentEvents, recentSubs] =
     await Promise.all([
       supabase
         .from("creators")
@@ -48,13 +59,15 @@ async function getRecent() {
         .order("created_at", { ascending: false })
         .limit(5),
       supabase
-        .from("events")
-        .select("id, title, city, status, date_start, created_at")
+        .from("creator_posts")
+        .select(
+          "id, slug, type, title, status, view_count, created_at, creator:creators(handle, display_name)",
+        )
         .order("created_at", { ascending: false })
         .limit(5),
       supabase
-        .from("editorial_articles")
-        .select("id, title, type, status, created_at")
+        .from("events")
+        .select("id, title, city, status, date_start, created_at")
         .order("created_at", { ascending: false })
         .limit(5),
       supabase
@@ -66,8 +79,8 @@ async function getRecent() {
     ]);
   return {
     pendingCreators: pendingCreators.data ?? [],
+    recentPosts: recentPosts.data ?? [],
     recentEvents: recentEvents.data ?? [],
-    recentArticles: recentArticles.data ?? [],
     recentSubs: recentSubs.data ?? [],
   };
 }
@@ -77,25 +90,26 @@ function StatCard({
   value,
   href,
   highlight,
+  hint,
 }: {
   label: string;
   value: number;
   href?: string;
   highlight?: boolean;
+  hint?: string;
 }) {
   const inner = (
     <Card
       className={cn(
-        "p-6 h-full transition-all",
+        "p-5 h-full",
         href &&
-          "hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--color-noir)] cursor-pointer",
-        highlight && "bg-accent",
+          "transition-all duration-150 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_24px_-8px_rgba(16,6,9,0.12)] cursor-pointer",
+        highlight && "border-accent bg-accent-soft",
       )}
     >
-      <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
-        {label}
-      </p>
-      <p className="font-display text-6xl mt-3 leading-none">{value}</p>
+      <p className="eyebrow text-noir-doux">{label}</p>
+      <p className="display-2 mt-2 leading-none">{value}</p>
+      {hint && <p className="mono-meta text-noir-doux mt-1">{hint}</p>}
     </Card>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
@@ -119,10 +133,9 @@ function timeAgo(iso: string): string {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  coulisses: "Coulisses",
-  profil: "Profil",
-  educatif: "Éducatif",
-  annonce: "Annonce",
+  short: "Post",
+  article: "Article",
+  service: "Service",
 };
 
 export default async function AdminDashboard() {
@@ -131,18 +144,24 @@ export default async function AdminDashboard() {
   return (
     <div className="max-w-7xl space-y-10">
       <div>
-        <p className="font-body text-xs uppercase tracking-widest text-noir-doux">
-          Back-office
-        </p>
-        <h1 className="font-display text-5xl mt-2 leading-none">Dashboard</h1>
+        <p className="eyebrow text-noir-doux">Back-office</p>
+        <h1 className="display-2 mt-2">Dashboard</h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Candidatures"
           value={stats.pending}
           href="/admin/creators"
           highlight={stats.pending > 0}
+          hint="à traiter"
+        />
+        <StatCard
+          label="Signalements"
+          value={stats.flags}
+          href="/admin/moderation"
+          highlight={stats.flags > 0}
+          hint="à modérer"
         />
         <StatCard
           label="Créateurs actifs"
@@ -154,232 +173,198 @@ export default async function AdminDashboard() {
           value={stats.subscribers}
           href="/admin/newsletter"
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl">
+        <StatCard
+          label="Posts créateurs"
+          value={stats.posts}
+          href="/feed"
+          hint="publiés"
+        />
         <StatCard
           label="Events publiés"
           value={stats.events}
           href="/admin/events?tab=published"
         />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl">
         <StatCard
-          label="Articles publiés"
+          label="Articles éditoriaux"
           value={stats.articles}
           href="/admin/articles?tab=published"
         />
       </div>
 
-      {/* Activité récente */}
-      <div className="border-t-2 border-noir pt-8">
-        <p className="eyebrow text-noir-doux">Activité récente</p>
+      <div className="border-t border-noir pt-8">
+        <p className="eyebrow text-noir-doux mb-6">Activité récente</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Candidatures */}
-        <section>
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl leading-none">
-              Candidatures
-            </h2>
-            {stats.pending > 0 && (
-              <Link
-                href="/admin/creators"
-                className="mono-meta uppercase underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
-              >
-                Voir tout →
-              </Link>
-            )}
-          </div>
-          {recent.pendingCreators.length === 0 ? (
-            <p className="mono-meta text-noir-doux py-4">
-              Aucune candidature en attente.
-            </p>
-          ) : (
-            <div className="border-2 border-noir bg-creme divide-y divide-noir/20">
-              {recent.pendingCreators.map((c) => (
-                <Link
-                  key={c.id}
-                  href="/admin/creators"
-                  className="block p-3.5 hover:bg-creme-fonce/40 transition-colors"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-display text-lg leading-tight">
-                      {c.display_name}
-                    </span>
-                    <span className="mono-meta text-noir-doux shrink-0">
-                      {timeAgo(c.created_at)}
-                    </span>
-                  </div>
-                  <p className="mono-meta text-noir-doux mt-0.5">
-                    {c.email}
-                    {c.city ? ` · ${c.city}` : ""}
-                    {c.categories?.length ? ` · ${c.categories.join(", ")}` : ""}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+        <RecentSection
+          title="Candidatures"
+          link="/admin/creators"
+          empty="Aucune candidature en attente."
+          emptyCta=""
+          emptyCtaHref=""
+        >
+          {recent.pendingCreators.map((c) => (
+            <RecentItem
+              key={c.id}
+              href="/admin/creators"
+              title={c.display_name}
+              meta={`${c.email}${c.city ? ` · ${c.city}` : ""}`}
+              timestamp={timeAgo(c.created_at)}
+            />
+          ))}
+        </RecentSection>
 
-        {/* Events */}
-        <section>
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl leading-none">
-              Derniers events
-            </h2>
-            <Link
-              href="/admin/events"
-              className="mono-meta uppercase underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
-            >
-              Voir tout →
-            </Link>
-          </div>
-          {recent.recentEvents.length === 0 ? (
-            <p className="mono-meta text-noir-doux py-4">
-              Pas encore d&apos;event créé.{" "}
-              <Link
-                href="/admin/events/new"
-                className="underline decoration-accent decoration-2 underline-offset-4"
-              >
-                Créer le premier →
-              </Link>
-            </p>
-          ) : (
-            <div className="border-2 border-noir bg-creme divide-y divide-noir/20">
-              {recent.recentEvents.map((e) => (
-                <Link
-                  key={e.id}
-                  href={`/admin/events/${e.id}`}
-                  className="block p-3.5 hover:bg-creme-fonce/40 transition-colors"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-display text-lg leading-tight flex-1">
-                      {e.title}
-                    </span>
-                    <span className="mono-meta text-noir-doux shrink-0">
-                      {timeAgo(e.created_at)}
-                    </span>
-                  </div>
-                  <div className="mono-meta text-noir-doux mt-0.5 flex items-center gap-2">
-                    {e.status === "published" ? (
-                      <span className="text-accent-deep">● Publié</span>
-                    ) : e.status === "archived" ? (
-                      <span>● Archivé</span>
-                    ) : (
-                      <span>○ Brouillon</span>
-                    )}
-                    <span>·</span>
-                    <span>{e.city}</span>
-                    <span>·</span>
-                    <span>
-                      {new Date(e.date_start).toLocaleDateString("fr-CH", {
-                        day: "2-digit",
-                        month: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+        <RecentSection
+          title="Posts créateurs"
+          link="/feed"
+          empty="Pas encore de post publié."
+          emptyCta="Voir le feed"
+          emptyCtaHref="/feed"
+        >
+          {recent.recentPosts.map((p: any) => (
+            <RecentItem
+              key={p.id}
+              href={`/admin/moderation?post=${p.id}`}
+              title={p.title ?? <em className="text-noir-doux">Sans titre</em>}
+              meta={`${TYPE_LABELS[p.type]} · ${p.creator?.display_name ?? "?"}`}
+              timestamp={timeAgo(p.created_at)}
+              status={p.status}
+            />
+          ))}
+        </RecentSection>
 
-        {/* Articles */}
-        <section>
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl leading-none">
-              Derniers articles
-            </h2>
-            <Link
-              href="/admin/articles"
-              className="mono-meta uppercase underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
-            >
-              Voir tout →
-            </Link>
-          </div>
-          {recent.recentArticles.length === 0 ? (
-            <p className="mono-meta text-noir-doux py-4">
-              Pas encore d&apos;article.{" "}
-              <Link
-                href="/admin/articles/new"
-                className="underline decoration-accent decoration-2 underline-offset-4"
-              >
-                Écrire le premier →
-              </Link>
-            </p>
-          ) : (
-            <div className="border-2 border-noir bg-creme divide-y divide-noir/20">
-              {recent.recentArticles.map((a) => (
-                <Link
-                  key={a.id}
-                  href={`/admin/articles/${a.id}`}
-                  className="block p-3.5 hover:bg-creme-fonce/40 transition-colors"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-display text-lg leading-tight flex-1">
-                      {a.title}
-                    </span>
-                    <span className="mono-meta text-noir-doux shrink-0">
-                      {timeAgo(a.created_at)}
-                    </span>
-                  </div>
-                  <div className="mono-meta text-noir-doux mt-1 flex items-center gap-2">
-                    <Tag className="text-[10px] px-1.5 py-0.5">
-                      {TYPE_LABELS[a.type] ?? a.type}
-                    </Tag>
-                    <span>·</span>
-                    {a.status === "published" ? (
-                      <span className="text-accent-deep">Publié</span>
-                    ) : a.status === "archived" ? (
-                      <span>Archivé</span>
-                    ) : (
-                      <span>Brouillon</span>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+        <RecentSection
+          title="Derniers events créés"
+          link="/admin/events"
+          empty="Pas encore d'event."
+          emptyCta="Créer le premier"
+          emptyCtaHref="/admin/events/new"
+        >
+          {recent.recentEvents.map((e) => (
+            <RecentItem
+              key={e.id}
+              href={`/admin/events/${e.id}`}
+              title={e.title}
+              meta={`${e.city} · ${new Date(e.date_start).toLocaleDateString("fr-CH", { day: "2-digit", month: "2-digit" })}`}
+              timestamp={timeAgo(e.created_at)}
+              status={e.status}
+            />
+          ))}
+        </RecentSection>
 
-        {/* Subscribers */}
-        <section>
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="font-display text-2xl leading-none">
-              Derniers abonnés newsletter
-            </h2>
-            <Link
-              href="/admin/newsletter"
-              className="mono-meta uppercase underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-deep"
-            >
-              Voir tout →
-            </Link>
-          </div>
-          {recent.recentSubs.length === 0 ? (
-            <p className="mono-meta text-noir-doux py-4">
-              Pas encore d&apos;abonné.
-            </p>
-          ) : (
-            <div className="border-2 border-noir bg-creme divide-y divide-noir/20">
-              {recent.recentSubs.map((s, i) => (
-                <div key={i} className="p-3.5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="mono-meta">{s.email}</span>
-                    <span className="mono-meta text-noir-doux shrink-0">
-                      {timeAgo(s.subscribed_at)}
-                    </span>
-                  </div>
-                  {s.source && (
-                    <div className="mono-meta text-noir-doux mt-0.5">
-                      {s.source}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <RecentSection
+          title="Derniers abonnés newsletter"
+          link="/admin/newsletter"
+          empty="Pas encore d'abonné."
+          emptyCta=""
+          emptyCtaHref=""
+        >
+          {recent.recentSubs.map((s, i) => (
+            <RecentItem
+              key={i}
+              title={s.email}
+              meta={s.source ?? ""}
+              timestamp={timeAgo(s.subscribed_at)}
+            />
+          ))}
+        </RecentSection>
       </div>
     </div>
   );
+}
+
+function RecentSection({
+  title,
+  link,
+  empty,
+  emptyCta,
+  emptyCtaHref,
+  children,
+}: {
+  title: string;
+  link: string;
+  empty: string;
+  emptyCta: string;
+  emptyCtaHref: string;
+  children: React.ReactNode;
+}) {
+  const childrenArray = Array.isArray(children) ? children : [children];
+  const hasChildren = childrenArray.filter(Boolean).length > 0;
+
+  return (
+    <section>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="heading-2">{title}</h2>
+        {hasChildren && (
+          <Link
+            href={link}
+            className="mono-meta text-noir-doux hover:text-accent-deep transition-colors"
+          >
+            Voir tout →
+          </Link>
+        )}
+      </div>
+      {!hasChildren ? (
+        <p className="mono-meta text-noir-doux py-4">
+          {empty}
+          {emptyCta && emptyCtaHref && (
+            <>
+              {" "}
+              <Link
+                href={emptyCtaHref}
+                className="text-accent-deep underline decoration-accent decoration-[1.5px] underline-offset-4"
+              >
+                {emptyCta} →
+              </Link>
+            </>
+          )}
+        </p>
+      ) : (
+        <div className="border border-noir bg-creme-clair rounded-lg overflow-hidden divide-y divide-noir/15">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function RecentItem({
+  href,
+  title,
+  meta,
+  timestamp,
+  status,
+}: {
+  href?: string;
+  title: React.ReactNode;
+  meta: string;
+  timestamp: string;
+  status?: string;
+}) {
+  const inner = (
+    <div className="px-4 py-3 hover:bg-creme-fonce/40 transition-colors">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="font-body text-[14px] font-medium truncate">
+          {title}
+        </span>
+        <span className="mono-meta text-noir-doux shrink-0">{timestamp}</span>
+      </div>
+      <p className="mono-meta text-noir-doux mt-0.5 flex items-center gap-2">
+        {status === "published" ? (
+          <span className="text-accent-deep">●</span>
+        ) : status === "draft" ? (
+          <span>○</span>
+        ) : status === "archived" ? (
+          <span>●</span>
+        ) : status === "flagged" ? (
+          <span className="text-rouge-brique">⚠</span>
+        ) : null}
+        <span>{meta}</span>
+      </p>
+    </div>
+  );
+  return href ? <Link href={href}>{inner}</Link> : inner;
 }

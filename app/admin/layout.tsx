@@ -25,12 +25,33 @@ export default async function AdminLayout({
     .maybeSingle();
   if (!admin) redirect("/");
 
+  const [pendingCreatorsRes, pendingFlagsRes, newInquiriesRes] =
+    await Promise.all([
+      supabase
+        .from("creators")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+      supabase
+        .from("post_flags")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+      supabase
+        .from("production_inquiries")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new"),
+    ]);
+
   return (
     <div className="min-h-screen flex">
-      <AdminSidebar role={admin.role} />
-      <div className="flex-1 flex flex-col bg-creme">
+      <AdminSidebar
+        role={admin.role}
+        pendingCreators={pendingCreatorsRes.count ?? 0}
+        pendingFlags={pendingFlagsRes.count ?? 0}
+        newInquiries={newInquiriesRes.count ?? 0}
+      />
+      <div className="flex-1 flex flex-col bg-creme min-w-0">
         <AdminTopBar displayName={admin.display_name} role={admin.role} />
-        <div className="flex-1 p-8">{children}</div>
+        <div className="flex-1 p-6 lg:p-10 overflow-x-hidden">{children}</div>
       </div>
     </div>
   );
