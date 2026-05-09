@@ -3,30 +3,32 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
+// Per brief: démarre VIDE avec curseur, puis typewriter en boucle sur des
+// exemples concrets (noms de créateurs > catégories abstraites).
 const EXAMPLES = [
-  "Les créateurs.",
+  "Léa Dupont",
+  "Marc Henchoz",
+  "Studio Brut",
+  "Camille Studio",
   "Nora Kessler",
   "Sami Béhar",
   "Mira Sallinen",
-  "@anaisc",
-  "Photographes",
-  "Lausanne",
-  "Mode",
 ];
 
-const TYPING_SPEED = 70;
-const DELETING_SPEED = 35;
-const PAUSE_AFTER_TYPE = 1400;
-const PAUSE_AFTER_DELETE = 350;
+const TYPING_SPEED = 80;
+const DELETING_SPEED = 50;
+const PAUSE_AFTER_TYPE = 2500;
+const PAUSE_AFTER_DELETE = 400;
 
 type Props = {
   defaultValue?: string;
 };
 
 export function CreatorsHeroSearch({ defaultValue = "" }: Props) {
-  const [text, setText] = useState(EXAMPLES[0]);
+  // Start empty with blinking cursor — no text until the first character is typed.
+  const [text, setText] = useState("");
   const [phase, setPhase] = useState<"typing" | "pausing" | "deleting">(
-    "pausing",
+    "typing",
   );
   const [exampleIdx, setExampleIdx] = useState(0);
   const [focused, setFocused] = useState(false);

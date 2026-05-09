@@ -20,6 +20,8 @@ type Props = {
   ctaSecondary?: { label: string; href: string };
   /** Seconds to wait before showing text overlay (default 5.5s = duration of intro before loop) */
   textRevealDelay?: number;
+  /** Rendered when the video file fails to load (e.g. file not yet uploaded). */
+  fallback?: React.ReactNode;
 };
 
 /**
@@ -36,11 +38,17 @@ export function HeroVideo({
   ctaPrimary,
   ctaSecondary,
   textRevealDelay = 5.5,
+  fallback,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [textVisible, setTextVisible] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+
+  // If video fails to load AND a fallback is provided, render that instead
+  if (videoFailed && fallback) {
+    return <>{fallback}</>;
+  }
 
   // Check if user has seen the intro (sessionStorage)
   useEffect(() => {
