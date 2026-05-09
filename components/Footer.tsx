@@ -7,6 +7,7 @@ const cols: FooterCol[] = [
   {
     title: "Plateforme",
     links: [
+      { href: "/", label: "Accueil" },
       { href: "/feed", label: "Feed" },
       { href: "/createurs", label: "Créateurs" },
       { href: "/events", label: "Events" },
