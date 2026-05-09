@@ -176,7 +176,6 @@ export default async function CreatorsPage({
                 category={c.categories[0] ?? "Créateur"}
                 city={c.city ?? "—"}
                 portrait={c.profile_image ?? PORTRAITS[i % PORTRAITS.length]}
-                index={i + 1}
               />
             ))}
           </div>

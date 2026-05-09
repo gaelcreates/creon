@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ArticleCard } from "@/components/ArticleCard";
-import { Tag } from "@/components/ui/Tag";
+import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate, formatArticleDate } from "@/lib/format";
 
@@ -13,14 +13,13 @@ const PORTRAIT_FALLBACKS = [
   "/assets/riso-portrait-3.svg",
 ];
 const ARTICLE_FALLBACK = "/assets/riso-article-1.svg";
-const ARTICLE_FALLBACK_BIG = "/assets/riso-article-2.svg";
 const EVENT_FALLBACK = "/assets/riso-event-1.svg";
 
 const TYPE_LABELS: Record<string, string> = {
   coulisses: "Coulisses",
   profil: "Profil",
   educatif: "Éducatif",
-  annonce: "Annonce",
+  signature: "Signature",
 };
 
 type EventRow = {
@@ -39,6 +38,7 @@ type CreatorRow = {
   id: string;
   handle: string;
   display_name: string;
+  short_bio: string | null;
   city: string | null;
   categories: string[];
   profile_image: string | null;
@@ -53,7 +53,28 @@ type ArticleRow = {
   type: string;
   reading_time: number | null;
   published_at: string | null;
-  author: string;
+};
+
+type PostRow = {
+  id: string;
+  slug: string;
+  type: "short" | "article" | "service";
+  title: string | null;
+  content_html: string | null;
+  cover_image: string | null;
+  gallery_images: string[];
+  service_url: string | null;
+  service_price: string | null;
+  service_cta: string | null;
+  tags: string[];
+  published_at: string | null;
+  view_count: number;
+  creator: {
+    handle: string;
+    display_name: string;
+    city: string | null;
+    profile_image: string | null;
+  };
 };
 
 function reorderByIds<T extends { id: string }>(
@@ -62,6 +83,42 @@ function reorderByIds<T extends { id: string }>(
 ): T[] {
   if (ids.length === 0) return rows;
   return ids.map((id) => rows.find((r) => r.id === id)).filter(Boolean) as T[];
+}
+
+function SectionHeader({
+  number,
+  title,
+  description,
+  cta,
+  ctaHref,
+}: {
+  number: string;
+  title: string;
+  description?: string;
+  cta?: string;
+  ctaHref?: string;
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-7">
+      <div>
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="mono-meta text-noir-doux">{number}</span>
+          <h2 className="heading-1">{title}</h2>
+        </div>
+        {description && (
+          <p className="small text-noir-doux max-w-md">{description}</p>
+        )}
+      </div>
+      {cta && ctaHref && (
+        <Link
+          href={ctaHref}
+          className={`shrink-0 ${buttonVariants({ variant: "secondary", size: "sm" })}`}
+        >
+          {cta}
+        </Link>
+      )}
+    </div>
+  );
 }
 
 export default async function Home() {
@@ -77,8 +134,9 @@ export default async function Home() {
   const featuredEventIds = (config?.featured_event_ids ?? []) as string[];
   const featuredCreatorIds = (config?.featured_creator_ids ?? []) as string[];
   const featuredArticleIds = (config?.featured_article_ids ?? []) as string[];
+  const featuredPostIds = (config?.featured_post_ids ?? []) as string[];
 
-  const eventsQuery =
+  const [eventsRes, creatorsRes, articlesRes, postsRes] = await Promise.all([
     featuredEventIds.length > 0
       ? supabase
           .from("events")
@@ -94,48 +152,55 @@ export default async function Home() {
           )
           .eq("status", "published")
           .order("date_start", { ascending: true })
-          .limit(3);
-
-  const creatorsQuery =
+          .limit(3),
     featuredCreatorIds.length > 0
       ? supabase
           .from("creators")
           .select(
-            "id, handle, display_name, city, categories, profile_image",
+            "id, handle, display_name, short_bio, city, categories, profile_image",
           )
           .eq("status", "active")
           .in("id", featuredCreatorIds)
       : supabase
           .from("creators")
           .select(
-            "id, handle, display_name, city, categories, profile_image",
+            "id, handle, display_name, short_bio, city, categories, profile_image",
           )
           .eq("status", "active")
           .order("display_name", { ascending: true })
-          .limit(5);
-
-  const articlesQuery =
+          .limit(4),
     featuredArticleIds.length > 0
       ? supabase
           .from("editorial_articles")
           .select(
-            "id, slug, title, excerpt, cover_image, type, reading_time, published_at, author",
+            "id, slug, title, excerpt, cover_image, type, reading_time, published_at",
           )
           .eq("status", "published")
           .in("id", featuredArticleIds)
       : supabase
           .from("editorial_articles")
           .select(
-            "id, slug, title, excerpt, cover_image, type, reading_time, published_at, author",
+            "id, slug, title, excerpt, cover_image, type, reading_time, published_at",
           )
           .eq("status", "published")
           .order("published_at", { ascending: false })
-          .limit(3);
-
-  const [eventsRes, creatorsRes, articlesRes] = await Promise.all([
-    eventsQuery,
-    creatorsQuery,
-    articlesQuery,
+          .limit(3),
+    featuredPostIds.length > 0
+      ? supabase
+          .from("creator_posts")
+          .select(
+            "id, slug, type, title, content_html, cover_image, gallery_images, service_url, service_price, service_cta, tags, published_at, view_count, creator:creators(handle, display_name, city, profile_image)",
+          )
+          .eq("status", "published")
+          .in("id", featuredPostIds)
+      : supabase
+          .from("creator_posts")
+          .select(
+            "id, slug, type, title, content_html, cover_image, gallery_images, service_url, service_price, service_cta, tags, published_at, view_count, creator:creators(handle, display_name, city, profile_image)",
+          )
+          .eq("status", "published")
+          .order("published_at", { ascending: false })
+          .limit(4),
   ]);
 
   const events = reorderByIds(
@@ -150,73 +215,57 @@ export default async function Home() {
     (articlesRes.data ?? []) as ArticleRow[],
     featuredArticleIds,
   );
+  const posts = reorderByIds(
+    (postsRes.data ?? []) as unknown as PostRow[],
+    featuredPostIds,
+  );
 
-  const featuredArticle = articles[0];
-  const restArticles = articles.slice(1, 3);
+  const heroTitle =
+    config?.hero_title ?? "La plateforme suisse pour les créateurs.";
+  const heroSubtitle =
+    config?.hero_subtitle ??
+    "Annuaire, feed et events de la scène créative romande. Curé à la main par CREON crew.";
 
   return (
     <>
-      {/* HERO */}
-      <section className="px-6 lg:px-14 pt-10 pb-16 max-w-[1320px] mx-auto w-full">
-        <p className="eyebrow text-noir-doux mb-4">
-          Édito ·{" "}
-          {new Date().toLocaleDateString("fr-CH", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}
-        </p>
-        <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-12 items-end">
-          <h1 className="font-display text-[clamp(64px,8.6vw,140px)] leading-[0.86] m-0 tracking-tight">
-            La scène<br />
-            <span className="hl-block">romande</span>
-            <br />
-            n&apos;attend<br />personne.
-          </h1>
-          <div>
-            <div className="aspect-[5/4] overflow-hidden border-[2.5px] border-noir shadow-[6px_6px_0_var(--color-noir)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/riso-hero.svg"
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <p className="mt-5 text-[17px] leading-relaxed max-w-[440px]">
-              Mode, musique, design, photo, art. Six villes, vingt-trois
-              lieux, des dizaines de créateurs. Tu rates rien.{" "}
-              <Link
-                href="/a-propos"
-                className="text-accent border-b-2 border-accent hover:text-accent-deep"
-              >
-                Lis le manifeste →
-              </Link>
-            </p>
-          </div>
+      {/* HERO (placeholder cinématique — Chunk 7) */}
+      <section className="px-6 lg:px-14 pt-16 pb-20 lg:pt-24 lg:pb-28 max-w-[1320px] mx-auto w-full">
+        <p className="eyebrow text-noir-doux mb-6">CREON · 2026</p>
+        <h1 className="display-1 max-w-5xl mb-6">{heroTitle}</h1>
+        <p className="lead text-noir-doux max-w-2xl">{heroSubtitle}</p>
+        <div className="flex flex-wrap gap-3 mt-10">
+          <Link
+            href="/feed"
+            className={buttonVariants({ variant: "primary", size: "lg" })}
+          >
+            Explorer le feed
+          </Link>
+          <Link
+            href="/proposer-mon-profil"
+            className={buttonVariants({ variant: "secondary", size: "lg" })}
+          >
+            Devenir créateur
+          </Link>
         </div>
+        <p className="mono-meta text-noir-doux mt-12 max-w-md">
+          ↳ Hero cinématique 3D en cours de design — placeholder statique
+          en attendant.
+        </p>
       </section>
 
-      <hr className="border-0 border-t-[2.5px] border-noir m-0" />
+      <hr className="border-0 border-t border-noir m-0" />
 
       {/* 01 — EVENTS */}
       {events.length > 0 && (
-        <section className="px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <div className="flex items-baseline justify-between mb-7">
-            <div>
-              <p className="eyebrow text-noir-doux">01 — À l&apos;affiche</p>
-              <h2 className="font-display text-[44px] sm:text-6xl lg:text-7xl mt-1.5 leading-[0.92] m-0">
-                Cette semaine
-              </h2>
-            </div>
-            <Link
-              href="/events"
-              className={`hidden sm:inline-flex ${buttonVariants({ variant: "secondary", size: "sm" })}`}
-            >
-              Tous les events →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+        <section className="px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
+          <SectionHeader
+            number="01"
+            title="Cette semaine"
+            description="Vernissages, concerts, soirées, marchés. Sélection à pas rater."
+            cta="Tous les events →"
+            ctaHref="/events"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {events.map((e) => (
               <EventCard
                 key={e.id}
@@ -226,148 +275,87 @@ export default async function Home() {
                 category={e.categories[0] ?? "Event"}
                 date={formatEventDate(e.date_start)}
                 meta={`${e.city} · ${e.venue}`}
-                price={e.price_info ?? "À voir"}
+                price={e.price_info ?? undefined}
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* 02 — CREATORS */}
-      {creators.length > 0 && (
-        <section className="bg-creme-fonce border-y-[2.5px] border-noir grain-bg">
-          <div className="relative z-[2] px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-            <div className="flex flex-col lg:flex-row items-baseline justify-between gap-6 mb-9">
-              <div>
-                <p className="eyebrow text-noir-doux">02 — Sous le radar</p>
-                <h2 className="font-display text-[44px] sm:text-6xl lg:text-7xl mt-1.5 leading-[0.92] m-0">
-                  Les créateurs<br className="hidden lg:block" /> du moment.
-                </h2>
-              </div>
-              <p className="max-w-sm text-[15px] leading-relaxed text-noir-doux">
-                Cinq portraits par semaine. Mode, art, musique, design, photo.
-                Choisis par la rédaction, pas par un algo.
-              </p>
-            </div>
+      {/* 02 — FEED (creator posts) */}
+      <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
+        <SectionHeader
+          number="02"
+          title="Le feed"
+          description="Les derniers posts, articles et services publiés par les créateurs eux-mêmes."
+          cta="Tout le feed →"
+          ctaHref="/feed"
+        />
+        {posts.length === 0 ? (
+          <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
+            <p className="heading-3 mb-3">Le feed démarre.</p>
+            <p className="small text-noir-doux max-w-md mx-auto mb-5">
+              Les premiers créateurs sont en cours d&apos;invitation. Reviens
+              dans quelques jours, ou rejoins-les en proposant ton profil.
+            </p>
+            <Link
+              href="/proposer-mon-profil"
+              className={buttonVariants({ variant: "accent", size: "sm" })}
+            >
+              Proposer mon profil
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {posts.map((p) => (
+              <CreatorPostCard key={p.id} post={p} />
+            ))}
+          </div>
+        )}
+      </section>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {creators.map((c, i) => (
-                <CreatorCard
-                  key={c.id}
-                  display_name={c.display_name}
-                  handle={c.handle}
-                  display_handle={`@${c.handle}`}
-                  category={c.categories[0] ?? "Créateur"}
-                  city={c.city ?? "—"}
-                  portrait={
-                    c.profile_image ??
-                    PORTRAIT_FALLBACKS[i % PORTRAIT_FALLBACKS.length]
-                  }
-                  index={i + 1}
-                />
-              ))}
-            </div>
+      {/* 03 — CRÉATEURS */}
+      {creators.length > 0 && (
+        <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
+          <SectionHeader
+            number="03"
+            title="Nos créateurs"
+            description="Mode, musique, art visuel, photo, design, artisanat. Sélection humaine, sans algo."
+            cta="Tout l'annuaire →"
+            ctaHref="/createurs"
+          />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {creators.map((c, i) => (
+              <CreatorCard
+                key={c.id}
+                display_name={c.display_name}
+                handle={c.handle}
+                display_handle={`@${c.handle}`}
+                category={c.categories[0] ?? "Créateur"}
+                city={c.city ?? "—"}
+                short_bio={c.short_bio}
+                portrait={
+                  c.profile_image ??
+                  PORTRAIT_FALLBACKS[i % PORTRAIT_FALLBACKS.length]
+                }
+              />
+            ))}
           </div>
         </section>
       )}
 
-      {/* MANIFESTE */}
-      <section className="bg-noir text-creme grain-bg grain-on-dark">
-        <div className="relative z-[2] px-6 lg:px-14 py-20 lg:py-24 max-w-[1320px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_200px] gap-8 lg:gap-10 items-start">
-            <p className="eyebrow text-accent">Manifeste</p>
-            <div>
-              <p className="font-display text-[32px] sm:text-5xl lg:text-[56px] leading-[1.05] m-0">
-                On fait un magazine pour celles et ceux qui pensent encore
-                qu&apos;une{" "}
-                <span className="bg-accent text-noir px-1">
-                  affiche risographe
-                </span>{" "}
-                dans une cave de Renens vaut mieux qu&apos;un post sponso.
-              </p>
-              <div className="flex flex-wrap items-center gap-5 mt-8">
-                <Link
-                  href="/a-propos"
-                  className={buttonVariants({ variant: "primary" })}
-                >
-                  Lire le manifeste complet →
-                </Link>
-                <span className="mono-meta text-paper-edge">
-                  Écrit en 2024 · révisé chaque année
-                </span>
-              </div>
-            </div>
-            <p className="mono-meta text-paper-edge text-[11px] leading-relaxed border-l-2 border-accent pl-3.5">
-              « Indépendant ne veut pas dire amateur.
-              <br />
-              Imparfait ne veut pas dire bâclé.
-              <br />
-              Suisse ne veut pas dire timide. »
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 03 — ARTICLES */}
+      {/* 04 — ARTICLES ÉDITORIAUX */}
       {articles.length > 0 && (
-        <section className="px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
-          <div className="flex items-baseline justify-between mb-8">
-            <div>
-              <p className="eyebrow text-noir-doux">03 — Lecture longue</p>
-              <h2 className="font-display text-[44px] sm:text-6xl lg:text-7xl mt-1.5 leading-[0.92] m-0">
-                Les dossiers.
-              </h2>
-            </div>
-            <Link
-              href="/articles"
-              className={`hidden sm:inline-flex ${buttonVariants({ variant: "secondary", size: "sm" })}`}
-            >
-              Toutes les archives →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr_1fr] gap-7 items-stretch">
-            {featuredArticle && (
-              <Link
-                href={`/articles/${featuredArticle.slug}`}
-                className="group flex flex-col border-[2.5px] border-noir bg-creme transition-all duration-150 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--color-noir)]"
-              >
-                <div className="aspect-[16/10] overflow-hidden border-b-[2.5px] border-noir">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={featuredArticle.cover_image ?? ARTICLE_FALLBACK_BIG}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="px-6 pt-5 pb-6 flex flex-col gap-3.5">
-                  <div className="flex justify-between items-center">
-                    <Tag variant="dark">
-                      {TYPE_LABELS[featuredArticle.type] ?? featuredArticle.type}
-                    </Tag>
-                    <span className="mono-meta">
-                      {featuredArticle.reading_time ?? "—"} MIN ·{" "}
-                      {featuredArticle.published_at
-                        ? formatArticleDate(featuredArticle.published_at)
-                        : ""}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-[40px] sm:text-5xl leading-[0.94] m-0">
-                    {featuredArticle.title}
-                  </h3>
-                  {featuredArticle.excerpt && (
-                    <p className="text-base leading-relaxed max-w-[600px]">
-                      {featuredArticle.excerpt}
-                    </p>
-                  )}
-                  <p className="mono-meta text-noir-doux">
-                    par {featuredArticle.author}
-                  </p>
-                </div>
-              </Link>
-            )}
-
-            {restArticles.map((a) => (
+        <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
+          <SectionHeader
+            number="04"
+            title="À lire"
+            description="Les dossiers et profils signés par CREON crew."
+            cta="Tous les articles →"
+            ctaHref="/articles"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {articles.map((a) => (
               <ArticleCard
                 key={a.id}
                 title={a.title}
@@ -376,41 +364,54 @@ export default async function Home() {
                 type={TYPE_LABELS[a.type] ?? a.type}
                 reading_time={a.reading_time ?? 0}
                 date={a.published_at ? formatArticleDate(a.published_at) : ""}
+                excerpt={a.excerpt}
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* 04 — NEWSLETTER */}
-      <section className="bg-accent border-y-[2.5px] border-noir grain-bg grain-on-orange">
-        <div className="relative z-[2] px-6 lg:px-14 py-20 lg:py-24 max-w-[1320px] mx-auto w-full">
+      {/* 05 — PRODUCTIONS (placeholder, vide pour l'instant) */}
+      <section className="border-t border-noir px-6 lg:px-14 py-14 lg:py-20 max-w-[1320px] mx-auto w-full">
+        <SectionHeader
+          number="05"
+          title="Productions"
+          description="Le service de production vidéo CREON. Films institutionnels, captations, événementiel."
+          cta="Voir nos productions →"
+          ctaHref="/productions"
+        />
+        <div className="border border-dashed border-noir/30 rounded-lg p-10 text-center">
+          <p className="heading-3 mb-3">Page productions en cours.</p>
+          <p className="small text-noir-doux max-w-md mx-auto">
+            Vitrine des références + formulaire de devis arrivent bientôt.
+          </p>
+        </div>
+      </section>
+
+      {/* 06 — NEWSLETTER CTA */}
+      <section className="border-t border-noir bg-creme-clair">
+        <div className="px-6 lg:px-14 py-16 lg:py-20 max-w-[1320px] mx-auto w-full">
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 items-center">
             <div>
-              <p className="eyebrow mb-3.5">04 — Newsletter</p>
-              <h2 className="font-display text-[48px] sm:text-7xl lg:text-[88px] leading-[0.88] m-0">
-                La crème
-                <br />
-                du vendredi,
-                <br />
-                direct dans la boîte.
+              <p className="eyebrow text-noir-doux mb-3">Newsletter</p>
+              <h2 className="display-2 mb-4">
+                La <span className="hl">crème</span> du vendredi, direct dans
+                ta boîte.
               </h2>
-            </div>
-            <div>
-              <p className="text-lg leading-relaxed max-w-[460px] mb-6">
-                Une fois par semaine. Cinq events à pas rater, un créateur à
-                découvrir, un dossier à lire. C&apos;est tout. Pas de spam,
-                jamais.
+              <p className="lead text-noir-doux max-w-xl">
+                Cinq events, un créateur du moment, un dossier à lire. Une
+                fois par semaine, jamais de spam.
               </p>
+            </div>
+            <div className="flex flex-col items-start gap-4">
               <Link
                 href="/newsletter"
-                className={`${buttonVariants({ variant: "primary", size: "lg" })} bg-noir text-creme border-noir`}
+                className={buttonVariants({ variant: "accent", size: "lg" })}
               >
-                S&apos;abonner →
+                S&apos;abonner
               </Link>
-              <p className="mono-meta mt-3.5 text-xs">
-                4 200+ abonnés · taux d&apos;ouverture 64 % · désabonnement
-                libre
+              <p className="mono-meta text-noir-doux">
+                4 200+ abonnés · taux d&apos;ouverture 64 %
               </p>
             </div>
           </div>
