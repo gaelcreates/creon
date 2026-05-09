@@ -24,7 +24,7 @@ export default async function Image({
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://creon-lilac.vercel.app";
 
   const [displayFont, bodyFont] = await Promise.all([
-    fetch(`${baseUrl}/fonts/Affigere-Regular.otf`).then((r) => r.arrayBuffer()),
+    fetch(`${baseUrl}/fonts/Lineal-Regular.ttf`).then((r) => r.arrayBuffer()),
     fetch(`${baseUrl}/fonts/Lineal-Regular.ttf`).then((r) => r.arrayBuffer()),
   ]);
 
@@ -100,7 +100,7 @@ export default async function Image({
               padding: "10px 24px",
               border: "3px solid #100609",
               background: "#ff7a00",
-              fontFamily: "Affigere",
+              fontFamily: "Lineal",
               fontSize: 32,
               color: "#100609",
             }}
@@ -135,7 +135,7 @@ export default async function Image({
           <div
             style={{
               display: "flex",
-              fontFamily: "Affigere",
+              fontFamily: "Lineal",
               fontSize: titleSize,
               lineHeight: 0.92,
               color: "#100609",
@@ -168,7 +168,7 @@ export default async function Image({
     {
       ...size,
       fonts: [
-        { name: "Affigere", data: displayFont, style: "normal", weight: 400 },
+        { name: "Lineal", data: displayFont, style: "normal", weight: 400 },
         { name: "Lineal", data: bodyFont, style: "normal", weight: 400 },
       ],
     },

@@ -17,7 +17,7 @@ export default async function EditArticlePage({
 
   const [articleRes, creatorsRes, eventsRes] = await Promise.all([
     supabase
-      .from("articles")
+      .from("editorial_articles")
       .select(
         "id, slug, title, subtitle, excerpt, content, content_html, cover_image, type, linked_creator, linked_event, author, reading_time, status, featured",
       )

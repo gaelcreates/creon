@@ -91,7 +91,7 @@ export default async function CreatorProfilePage({
       .order("date_start", { ascending: true })
       .limit(6),
     supabase
-      .from("articles")
+      .from("editorial_articles")
       .select(
         "id, slug, title, cover_image, type, reading_time, published_at",
       )

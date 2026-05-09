@@ -117,14 +117,14 @@ export default async function Home() {
   const articlesQuery =
     featuredArticleIds.length > 0
       ? supabase
-          .from("articles")
+          .from("editorial_articles")
           .select(
             "id, slug, title, excerpt, cover_image, type, reading_time, published_at, author",
           )
           .eq("status", "published")
           .in("id", featuredArticleIds)
       : supabase
-          .from("articles")
+          .from("editorial_articles")
           .select(
             "id, slug, title, excerpt, cover_image, type, reading_time, published_at, author",
           )

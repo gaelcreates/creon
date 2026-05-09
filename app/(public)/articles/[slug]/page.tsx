@@ -36,7 +36,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const supabase = await createClient();
   const { data: article } = await supabase
-    .from("articles")
+    .from("editorial_articles")
     .select("title, excerpt, cover_image")
     .eq("slug", slug)
     .eq("status", "published")
@@ -58,7 +58,7 @@ export default async function ArticleDetailPage({
   const supabase = await createClient();
 
   const { data: article } = await supabase
-    .from("articles")
+    .from("editorial_articles")
     .select(
       "id, slug, title, subtitle, excerpt, content_html, cover_image, type, reading_time, author, published_at, linked_creator, creator:creators(handle, display_name, city)",
     )
@@ -70,7 +70,7 @@ export default async function ArticleDetailPage({
   const art = article as unknown as ArticleDetail;
 
   const { data: similar } = await supabase
-    .from("articles")
+    .from("editorial_articles")
     .select(
       "id, slug, title, cover_image, type, reading_time, published_at",
     )

@@ -46,7 +46,7 @@ export default async function AdminArticlesPage({
   const supabase = await createClient();
 
   let listQuery = supabase
-    .from("articles")
+    .from("editorial_articles")
     .select(
       "id, slug, title, cover_image, type, author, reading_time, status, featured, published_at, created_at",
     )
@@ -55,17 +55,17 @@ export default async function AdminArticlesPage({
 
   const [allCount, draftCount, publishedCount, archivedCount, listRes] =
     await Promise.all([
-      supabase.from("articles").select("id", { count: "exact", head: true }),
+      supabase.from("editorial_articles").select("id", { count: "exact", head: true }),
       supabase
-        .from("articles")
+        .from("editorial_articles")
         .select("id", { count: "exact", head: true })
         .eq("status", "draft"),
       supabase
-        .from("articles")
+        .from("editorial_articles")
         .select("id", { count: "exact", head: true })
         .eq("status", "published"),
       supabase
-        .from("articles")
+        .from("editorial_articles")
         .select("id", { count: "exact", head: true })
         .eq("status", "archived"),
       listQuery,

@@ -80,7 +80,7 @@ export default async function AdminHomepagePage() {
       .eq("status", "active")
       .order("display_name", { ascending: true }),
     supabase
-      .from("articles")
+      .from("editorial_articles")
       .select("id, title, type, published_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })

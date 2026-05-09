@@ -72,7 +72,7 @@ export async function createArticle(formData: FormData) {
 
   const adminClient = createAdminClient();
   const { data, error } = await adminClient
-    .from("articles")
+    .from("editorial_articles")
     .insert({
       ...fields,
       created_by: user.id,
@@ -103,7 +103,7 @@ export async function updateArticle(formData: FormData) {
   const adminClient = createAdminClient();
 
   const { data: existing } = await adminClient
-    .from("articles")
+    .from("editorial_articles")
     .select("status, published_at")
     .eq("id", id)
     .maybeSingle();
@@ -114,7 +114,7 @@ export async function updateArticle(formData: FormData) {
       : existing?.published_at ?? null;
 
   const { error } = await adminClient
-    .from("articles")
+    .from("editorial_articles")
     .update({ ...fields, published_at })
     .eq("id", id);
 
@@ -132,7 +132,7 @@ export async function deleteArticle(formData: FormData) {
   if (!id) throw new Error("id required");
 
   const adminClient = createAdminClient();
-  const { error } = await adminClient.from("articles").delete().eq("id", id);
+  const { error } = await adminClient.from("editorial_articles").delete().eq("id", id);
   if (error) throw error;
 
   revalidatePath("/admin/articles");

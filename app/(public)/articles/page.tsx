@@ -48,7 +48,7 @@ export default async function ArticlesPage({
 
   const supabase = await createClient();
   let query = supabase
-    .from("articles")
+    .from("editorial_articles")
     .select(
       "id, slug, title, excerpt, cover_image, type, reading_time, author, published_at, featured",
     )

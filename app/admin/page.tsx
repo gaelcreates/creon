@@ -24,7 +24,7 @@ async function getStats() {
       .select("id", { count: "exact", head: true })
       .eq("status", "published"),
     supabase
-      .from("articles")
+      .from("editorial_articles")
       .select("id", { count: "exact", head: true })
       .eq("status", "published"),
   ]);
@@ -53,7 +53,7 @@ async function getRecent() {
         .order("created_at", { ascending: false })
         .limit(5),
       supabase
-        .from("articles")
+        .from("editorial_articles")
         .select("id, title, type, status, created_at")
         .order("created_at", { ascending: false })
         .limit(5),
