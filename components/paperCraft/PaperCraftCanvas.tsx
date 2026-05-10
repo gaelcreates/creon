@@ -2,6 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
+import { Desk } from "./Desk";
 
 /**
  * Étape 1 du brief — Canvas R3F vide avec caméra + lights.
@@ -25,7 +26,8 @@ export default function PaperCraftCanvas() {
     >
       <Suspense fallback={null}>
         <Lights />
-        {/* Étapes 2-6 : <Desk />, <DeskItems />, <Computer />, <Wall />, etc. */}
+        <Desk />
+        {/* Étapes 3-6 : <DeskItems />, <Computer />, <Wall />, etc. */}
       </Suspense>
     </Canvas>
   );
