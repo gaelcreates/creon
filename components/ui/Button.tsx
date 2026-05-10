@@ -3,27 +3,48 @@ import { cn } from "@/lib/cn";
 type Variant = "primary" | "accent" | "secondary" | "tertiary" | "destructive";
 type Size = "sm" | "md" | "lg";
 
+/**
+ * Boutons style "collage" : ombre papier offset (pas centrée SaaS), bordures
+ * 1.5px (trait de stylo), lift léger au hover comme si on soulevait une
+ * étiquette collée.
+ *
+ * Ondes :
+ * - shadow offset 2-3px en bas-droite (effet "feuille posée")
+ * - hover : translate-up + ombre qui se resserre vers la position de repos
+ * - active : scale-down 0.98 (clic taclé)
+ */
+
 const base =
-  "inline-flex items-center justify-center gap-2 font-body font-medium rounded-md " +
-  "transition-all duration-150 ease-out cursor-pointer " +
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-creme";
+  "inline-flex items-center justify-center gap-2 font-body font-medium " +
+  "rounded-md transition-all duration-150 ease-out cursor-pointer " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent " +
+  "focus-visible:ring-offset-2 focus-visible:ring-offset-creme " +
+  "active:translate-y-px active:translate-x-px";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-noir text-creme hover:bg-noir-doux active:scale-[0.98] " +
-    "shadow-[0_1px_2px_rgba(16,6,9,0.08)] hover:shadow-[0_4px_12px_rgba(16,6,9,0.15)]",
+    "bg-noir text-creme border-[1.5px] border-noir " +
+    "shadow-[2px_3px_0_rgba(16,6,9,0.85)] " +
+    "hover:shadow-[1px_2px_0_rgba(16,6,9,0.85)] hover:-translate-y-px " +
+    "active:shadow-[0px_1px_0_rgba(16,6,9,0.85)]",
   accent:
-    "bg-accent text-noir hover:bg-accent-deep active:scale-[0.98] " +
-    "shadow-[0_1px_2px_rgba(233,106,0,0.15)] hover:shadow-[0_4px_12px_rgba(233,106,0,0.25)]",
+    "bg-accent text-noir border-[1.5px] border-noir " +
+    "shadow-[2px_3px_0_rgba(16,6,9,0.85)] " +
+    "hover:shadow-[1px_2px_0_rgba(16,6,9,0.85)] hover:-translate-y-px hover:bg-accent-deep " +
+    "active:shadow-[0px_1px_0_rgba(16,6,9,0.85)]",
   secondary:
-    "bg-creme-clair text-noir border border-noir " +
-    "hover:bg-noir hover:text-creme active:scale-[0.98]",
+    "bg-creme-clair text-noir border-[1.5px] border-noir " +
+    "shadow-[2px_3px_0_rgba(16,6,9,0.6)] " +
+    "hover:shadow-[1px_2px_0_rgba(16,6,9,0.6)] hover:-translate-y-px hover:bg-noir hover:text-creme " +
+    "active:shadow-[0px_1px_0_rgba(16,6,9,0.6)]",
   tertiary:
     "text-noir underline decoration-accent decoration-[1.5px] underline-offset-4 " +
     "hover:text-accent-deep hover:decoration-accent-deep",
   destructive:
-    "text-rouge-brique border border-rouge-brique/40 " +
-    "hover:bg-rouge-brique hover:text-creme hover:border-rouge-brique active:scale-[0.98]",
+    "text-rouge-brique border-[1.5px] border-rouge-brique/50 " +
+    "shadow-[2px_3px_0_rgba(177,61,61,0.3)] " +
+    "hover:bg-rouge-brique hover:text-creme hover:border-rouge-brique hover:-translate-y-px " +
+    "hover:shadow-[1px_2px_0_rgba(177,61,61,0.5)]",
 };
 
 const sizes: Record<Size, string> = {
