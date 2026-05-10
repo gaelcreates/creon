@@ -45,11 +45,6 @@ export function HeroVideo({
   const [skipped, setSkipped] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
 
-  // If video fails to load AND a fallback is provided, render that instead
-  if (videoFailed && fallback) {
-    return <>{fallback}</>;
-  }
-
   // Check if user has seen the intro (sessionStorage)
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -70,6 +65,12 @@ export function HeroVideo({
     }, textRevealDelay * 1000);
     return () => clearTimeout(t);
   }, [skipped, textVisible, textRevealDelay]);
+
+  // Early-return AFTER all hooks (rules of hooks): if the video file fails to
+  // load and a fallback is provided, render the fallback instead.
+  if (videoFailed && fallback) {
+    return <>{fallback}</>;
+  }
 
   function handleSkip() {
     setSkipped(true);
