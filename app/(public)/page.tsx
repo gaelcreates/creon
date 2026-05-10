@@ -4,8 +4,7 @@ import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
 import { Card } from "@/components/ui/Card";
 import { Tag } from "@/components/ui/Tag";
-import { HeroCinematic } from "@/components/HeroCinematic";
-import { HeroVideo } from "@/components/HeroVideo";
+import { HeroPaperCraft } from "@/components/HeroPaperCraft";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate } from "@/lib/format";
 
@@ -171,10 +170,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeroVideo
-        videoSrc="/hero/intro.mp4"
-        webmSrc="/hero/intro.webm"
-        posterSrc="/hero/intro-poster.jpg"
+      <HeroPaperCraft
         eyebrow="CREON · Plateforme créative suisse"
         title={heroTitle}
         subtitle={heroSubtitle}
@@ -183,18 +179,6 @@ export default async function Home() {
           label: "Devenir créateur",
           href: "/proposer-mon-profil",
         }}
-        fallback={
-          <HeroCinematic
-            eyebrow="CREON · Plateforme créative suisse"
-            title={heroTitle}
-            subtitle={heroSubtitle}
-            ctaPrimary={{ label: "Explorer le feed", href: "/feed" }}
-            ctaSecondary={{
-              label: "Devenir créateur",
-              href: "/proposer-mon-profil",
-            }}
-          />
-        }
       />
 
       <section className="border-t border-noir px-6 lg:px-14 pt-28 pb-20 lg:pt-32 lg:pb-24 max-w-[1320px] mx-auto w-full">
