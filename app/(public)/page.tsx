@@ -5,6 +5,7 @@ import { CreatorCard } from "@/components/CreatorCard";
 import { Card } from "@/components/ui/Card";
 import { Tag } from "@/components/ui/Tag";
 import { HeroCinema } from "@/components/HeroCinema";
+import { TitleIllustration } from "@/components/TitleIllustration";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate } from "@/lib/format";
 
@@ -306,6 +307,86 @@ export default async function Home() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* ─── 04 — Mantra / Vision CREON ─────────────────────────────── */}
+      <section className="border-t border-noir px-6 lg:px-14 pt-28 pb-24 lg:pt-32 lg:pb-32 max-w-[1320px] mx-auto w-full">
+        <div className="flex items-baseline gap-2 mb-10">
+          <span className="mono-meta text-noir-doux">04</span>
+          <h2 className="eyebrow text-noir-doux">Notre raison d&apos;être</h2>
+        </div>
+
+        <p
+          className="font-display font-semibold tracking-[-0.03em] leading-[1.05] text-noir max-w-5xl"
+          style={{ fontSize: "clamp(40px, 6.5vw, 92px)" }}
+        >
+          La scène créative romande mérite{" "}
+          <span className="hl">mieux qu&apos;un feed Instagram.</span>
+        </p>
+
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-16 items-start">
+          <p className="lead text-noir leading-relaxed max-w-2xl">
+            CREON, c&apos;est un annuaire curé à la main, un feed sans algo,
+            un agenda d&apos;events sélectionnés et un média éditorial signé.
+            Pas de croissance forcée. Pas de quotas de likes. Juste une
+            plateforme faite par et pour les créateurs suisses — pour qu&apos;ils
+            se montrent, se découvrent, et se croisent.
+          </p>
+
+          <div className="border-l-[3px] border-accent pl-6 lg:pl-8">
+            <p className="mono-meta text-accent-deep mb-3">Nos engagements</p>
+            <ul className="space-y-2.5 body text-noir">
+              <li>Sélection humaine, jamais algorithmique.</li>
+              <li>Aucune publicité injectée dans le feed.</li>
+              <li>Les créateurs gardent la main sur leurs contenus.</li>
+              <li>Curation lente, qualité plutôt que volume.</li>
+            </ul>
+            <p className="mono-meta text-noir-doux mt-6">— CREON crew</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 05 — CTA Newsletter ────────────────────────────────────── */}
+      <section className="border-t border-noir px-6 lg:px-14 pt-24 pb-24 lg:pt-28 lg:pb-32 max-w-[1320px] mx-auto w-full">
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-center">
+          <div>
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="mono-meta text-noir-doux">05</span>
+              <h2 className="eyebrow text-noir-doux">La newsletter</h2>
+            </div>
+            <h3
+              className="font-display font-semibold tracking-[-0.025em] leading-[1.02] text-noir mb-5"
+              style={{ fontSize: "clamp(36px, 5vw, 64px)" }}
+            >
+              La feuille du{" "}
+              <span className="hl">vendredi.</span>
+            </h3>
+            <p className="lead text-noir-doux mb-8 max-w-lg">
+              Une fois par semaine, dans ta boîte : les events à pas manquer,
+              les créateurs à découvrir, les articles signés CREON crew.
+              Lecture rapide, le vendredi à 9h.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/newsletter"
+                className={buttonVariants({ variant: "accent", size: "lg" })}
+              >
+                S&apos;abonner →
+              </Link>
+              <Link
+                href="/newsletter"
+                className={buttonVariants({ variant: "secondary", size: "lg" })}
+              >
+                Voir un numéro
+              </Link>
+            </div>
+          </div>
+
+          {/* Illustration enveloppe à droite (statique, plus large que le SectionDecor classique) */}
+          <div className="relative hidden lg:block min-h-[280px]">
+            <TitleIllustration variant="newsletter" />
+          </div>
+        </div>
       </section>
     </>
   );

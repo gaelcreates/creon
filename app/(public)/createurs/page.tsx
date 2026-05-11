@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorCard } from "@/components/CreatorCard";
-import { TitleIllustration } from "@/components/TitleIllustration";
 import { CreatorsHeroSearch } from "@/components/CreatorsHeroSearch";
 import { buildQuery } from "@/lib/format";
 
@@ -74,8 +73,7 @@ export default async function CreatorsPage({
 
   return (
     <>
-      <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full overflow-hidden">
-        <TitleIllustration variant="creators" />
+      <section className="px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full">
         <p className="eyebrow text-noir-doux mb-5">
           Annuaire · sur invitation
         </p>

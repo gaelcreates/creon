@@ -2,7 +2,13 @@
 
 import { motion } from "framer-motion";
 
-type Variant = "feed" | "creators" | "events" | "productions" | "newsletter";
+type Variant =
+  | "feed"
+  | "creators"
+  | "events"
+  | "productions"
+  | "newsletter"
+  | "articles";
 
 type Props = {
   variant: Variant;
@@ -37,6 +43,7 @@ export function TitleIllustration({ variant, className = "" }: Props) {
         {variant === "events" && <EventsIllus />}
         {variant === "productions" && <ProductionsIllus />}
         {variant === "newsletter" && <NewsletterIllus />}
+        {variant === "articles" && <ArticlesIllus />}
       </motion.div>
     </div>
   );
@@ -157,6 +164,62 @@ function ProductionsIllus() {
         <text x="64" y="60" fontFamily="monospace" fontSize="7" fill="#100609">
           REC •
         </text>
+      </g>
+    </svg>
+  );
+}
+
+// ─── ARTICLES : magazine ouvert + stylo plume + signet rouge ─────────────
+function ArticlesIllus() {
+  return (
+    <svg viewBox="0 0 160 120" className="w-full h-auto">
+      {/* magazine ouvert : 2 pages côte à côte, légèrement inclinées */}
+      <g transform="rotate(-3 80 70)">
+        {/* page gauche */}
+        <path
+          d="M14 32 L80 28 L80 102 L14 98 Z"
+          fill="#fbf3e2"
+          stroke="#100609"
+          strokeWidth="1.8"
+        />
+        {/* page droite */}
+        <path
+          d="M80 28 L146 32 L146 98 L80 102 Z"
+          fill="#ede0c4"
+          stroke="#100609"
+          strokeWidth="1.8"
+        />
+        {/* pli central (un peu plus marqué) */}
+        <line x1="80" y1="28" x2="80" y2="102" stroke="#100609" strokeWidth="1" opacity="0.5" />
+        {/* titre de l'article (bandeau orange en haut de la page gauche) */}
+        <rect x="22" y="40" width="38" height="6" fill="#ff7a00" />
+        {/* lignes de texte page gauche */}
+        <line x1="22" y1="56" x2="72" y2="56" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="22" y1="64" x2="68" y2="64" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="22" y1="72" x2="74" y2="72" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="22" y1="80" x2="62" y2="80" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="22" y1="88" x2="70" y2="88" stroke="#3d2a1f" strokeWidth="1.3" />
+        {/* photo carrée page droite (rectangle plein) */}
+        <rect x="86" y="40" width="36" height="28" fill="#2a4a6b" stroke="#100609" strokeWidth="1.4" />
+        {/* lignes de texte page droite (sous l'image) */}
+        <line x1="86" y1="76" x2="138" y2="76" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="86" y1="84" x2="134" y2="84" stroke="#3d2a1f" strokeWidth="1.3" />
+        <line x1="86" y1="92" x2="138" y2="92" stroke="#3d2a1f" strokeWidth="1.3" />
+      </g>
+      {/* signet rouge qui dépasse en haut */}
+      <g transform="rotate(8 100 28)">
+        <path d="M96 14 L106 14 L106 36 L101 32 L96 36 Z" fill="#c63838" stroke="#100609" strokeWidth="1.4" />
+      </g>
+      {/* stylo plume incliné posé en travers */}
+      <g transform="rotate(28 60 100)">
+        {/* corps */}
+        <rect x="20" y="98" width="50" height="6" fill="#1a1612" stroke="#100609" strokeWidth="1.4" />
+        {/* capuchon */}
+        <rect x="68" y="98" width="14" height="6" fill="#ff7a00" stroke="#100609" strokeWidth="1.4" />
+        {/* clip métal */}
+        <rect x="76" y="96" width="3" height="10" fill="#100609" />
+        {/* pointe argentée */}
+        <path d="M20 101 L10 101 L20 105 Z" fill="#7a7570" stroke="#100609" strokeWidth="1.2" />
       </g>
     </svg>
   );
