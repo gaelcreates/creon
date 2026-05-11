@@ -4,7 +4,7 @@ import { EventCard } from "@/components/EventCard";
 import { CreatorCard } from "@/components/CreatorCard";
 import { Card } from "@/components/ui/Card";
 import { Tag } from "@/components/ui/Tag";
-import { HeroPaperCraft } from "@/components/HeroPaperCraft";
+import { HeroCinema } from "@/components/HeroCinema";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate } from "@/lib/format";
 
@@ -170,7 +170,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeroPaperCraft
+      <HeroCinema
         eyebrow="CREON · Plateforme créative suisse"
         title={heroTitle}
         subtitle={heroSubtitle}
