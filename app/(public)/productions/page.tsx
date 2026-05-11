@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Tag } from "@/components/ui/Tag";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { TitleIllustration } from "@/components/TitleIllustration";
 import { submitInquiry } from "./actions";
 
 export const metadata = {
@@ -86,7 +87,8 @@ export default async function ProductionsPage({
 
   return (
     <>
-      <section className="px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full">
+      <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full">
+        <TitleIllustration variant="productions" />
         <p className="eyebrow text-noir-doux mb-5">
           Service interne · CREON crew
         </p>

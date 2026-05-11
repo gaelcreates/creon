@@ -121,7 +121,7 @@ export function CreatorsHeroSearch({ defaultValue = "" }: Props) {
               setFocused(false);
             }
           }}
-          placeholder="Chercher un créateur, une discipline, une ville…"
+          placeholder=""
           className="w-full px-6 lg:px-10 py-6 lg:py-8 border-2 border-noir bg-creme-clair rounded-2xl font-display font-semibold text-[clamp(48px,7vw,88px)] tracking-[-0.025em] leading-[0.92] text-noir placeholder:text-noir-doux/40 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
           autoComplete="off"
         />

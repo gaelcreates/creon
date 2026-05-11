@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorPostCard } from "@/components/feed/CreatorPostCard";
-import { SectionDecor } from "@/components/SectionDecor";
+import { TitleIllustration } from "@/components/TitleIllustration";
 import { buildQuery } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
@@ -87,7 +87,7 @@ export default async function FeedPage({
   return (
     <>
       <section className="relative px-6 lg:px-14 pt-28 pb-12 lg:pt-32 max-w-[1320px] mx-auto w-full overflow-hidden">
-        <SectionDecor variant="feed" />
+        <TitleIllustration variant="feed" />
         <p className="eyebrow text-noir-doux mb-5">
           Plateforme · contenus créateurs
         </p>
